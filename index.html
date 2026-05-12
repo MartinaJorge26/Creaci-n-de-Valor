@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1F3864">
+<title>Creación de Valor · DEL PALACIO</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#1F3864;--blue-mid:#2E75B6;--blue-light:#E6F1FB;--blue-text:#0C447C;
+  --green:#1D9E75;--green-light:#E1F5EE;--green-text:#085041;
+  --amber:#BA7517;--amber-light:#FAEEDA;--amber-text:#633806;
+  --red:#E24B4A;--red-light:#FCEBEB;--red-text:#791F1F;
+  --gray:#888780;--gray-light:#F1EFE8;--gray-text:#444441;
+  --border:#E8E6DF;--text:#2C2C2A;--text2:#5F5E5A;--bg:#F5F5F0;
+  --purple:#6B4EFF;--purple-light:#EEE9FF;--purple-text:#3B1FA8;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ===================== PANTALLA CARGA ===================== */
+#screen-login{display:flex;flex-direction:column;min-height:100vh;}
+.login-header{background:var(--blue);padding:48px 24px 32px;text-align:center;}
+.login-logo{width:56px;height:56px;background:rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:#fff;}
+.login-title{color:#fff;font-size:22px;font-weight:600;}
+.login-sub{color:#B5D4F4;font-size:14px;margin-top:4px;}
+.login-body{flex:1;padding:24px 20px;}
+.login-card{background:#fff;border-radius:16px;border:1px solid var(--border);padding:20px;margin-bottom:16px;}
+.login-card h3{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.step-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.step-row:last-child{border-bottom:none;padding-bottom:0;}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:13px;color:var(--text);line-height:1.4;}
+.step-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all 0.15s;margin-bottom:10px;}
+.upload-zone.done{border-color:var(--green);border-style:solid;background:var(--green-light);}
+.upload-zone.optional-done{border-color:var(--blue-mid);border-style:solid;background:var(--blue-light);}
+.upload-zone .uz-icon{font-size:24px;color:var(--gray);margin-bottom:6px;}
+.upload-zone.done .uz-icon{color:var(--green);}
+.upload-zone.optional-done .uz-icon{color:var(--blue-mid);}
+.upload-zone .uz-label{font-size:13px;color:var(--text2);}
+.upload-zone .uz-name{font-size:12px;color:var(--green-text);margin-top:4px;font-weight:500;}
+.optional-tag{font-size:10px;background:var(--gray-light);color:var(--gray-text);padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:500;}
+.btn-main{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s;}
+.btn-main:hover{background:var(--blue-mid);}
+.btn-main:disabled{background:var(--border);color:var(--gray);cursor:not-allowed;}
+.upload-status{text-align:center;font-size:13px;color:var(--text2);margin-top:10px;}
+
+/* ===================== SELECTOR ===================== */
+#screen-selector{display:none;min-height:100vh;}
+.sel-header{background:var(--blue);padding:48px 20px 24px;}
+.sel-title{color:#fff;font-size:20px;font-weight:600;}
+.sel-sub{color:#B5D4F4;font-size:13px;margin-top:4px;}
+.sel-body{padding:16px;}
+.role-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.role-btn{background:#fff;border:2px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.role-btn.active{border-color:var(--blue-mid);background:var(--blue-light);}
+.role-btn i{font-size:26px;color:var(--gray);display:block;margin-bottom:6px;}
+.role-btn.active i{color:var(--blue-mid);}
+.role-btn span{font-size:13px;font-weight:600;color:var(--text2);}
+.role-btn.active span{color:var(--blue-text);}
+.search-wrap{position:relative;margin-bottom:16px;}
+.search-wrap input{width:100%;padding:12px 12px 12px 40px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:#fff;color:var(--text);font-family:inherit;}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--gray);}
+.prom-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.12s;}
+.prom-card:active{background:var(--blue-light);}
+.prom-avatar{width:40px;height:40px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--blue-text);flex-shrink:0;}
+.prom-avatar.sup{background:#EEE9FF;color:#3B1FA8;}
+.prom-name{font-size:15px;font-weight:500;color:var(--text);}
+.prom-stats{font-size:12px;color:var(--text2);margin-top:2px;}
+.prom-arrow{margin-left:auto;font-size:18px;color:var(--gray);}
+.pct-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.pill-green{background:var(--green-light);color:var(--green-text);}
+.pill-amber{background:var(--amber-light);color:var(--amber-text);}
+.pill-red{background:var(--red-light);color:var(--red-text);}
+.pill-gray{background:var(--gray-light);color:var(--gray-text);}
+
+/* ===================== DASHBOARD PROMOTOR ===================== */
+#screen-dashboard{display:none;min-height:100vh;padding-bottom:80px;}
+.dash-header{background:var(--blue);padding:44px 20px 20px;}
+.dash-back{color:#B5D4F4;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:12px;}
+.dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.dash-greeting{color:#B5D4F4;font-size:13px;}
+.dash-name{color:#fff;font-size:18px;font-weight:600;}
+.dash-avatar{width:40px;height:40px;border-radius:50%;background:#378ADD;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#042C53;}
+.progress-card{background:rgba(255,255,255,0.12);border-radius:14px;padding:14px 16px;}
+.pct-big{color:#fff;font-size:36px;font-weight:700;line-height:1;}
+.pct-lbl{color:#B5D4F4;font-size:12px;margin-top:2px;}
+.prog-track{height:8px;background:rgba(255,255,255,0.2);border-radius:4px;margin:10px 0 6px;overflow:hidden;}
+.prog-fill{height:100%;background:#5DCAA5;border-radius:4px;transition:width 0.8s ease;}
+.prog-row{display:flex;justify-content:space-between;}
+.prog-sub{color:#B5D4F4;font-size:11px;}
+.dash-body{padding:16px;}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.stat-card{background:#fff;border-radius:12px;padding:12px 10px;border:1px solid var(--border);text-align:center;}
+.stat-val{font-size:22px;font-weight:600;line-height:1;}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:3px;}
+.val-green{color:var(--green);}
+.val-red{color:var(--red);}
+.val-gray{color:var(--text);}
+.val-amber{color:var(--amber);}
+.val-blue{color:var(--blue-mid);}
+.section-hdr{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;margin-top:4px;}
+.task-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:8px;border:1px solid var(--border);}
+.task-row{display:flex;align-items:flex-start;gap:10px;}
+.task-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;}
+.ic-green{background:var(--green-light);color:var(--green);}
+.ic-amber{background:var(--amber-light);color:var(--amber);}
+.ic-gray{background:var(--gray-light);color:var(--gray);}
+.ic-blue{background:var(--blue-light);color:var(--blue-mid);}
+.task-name{font-size:14px;font-weight:500;color:var(--text);line-height:1.3;}
+.task-pdv{font-size:12px;color:var(--text2);margin-top:3px;}
+.task-badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;margin-top:6px;}
+.tb-green{background:var(--green-light);color:var(--green-text);}
+.tb-amber{background:var(--amber-light);color:var(--amber-text);}
+.tb-gray{background:var(--gray-light);color:var(--gray-text);}
+.empty-state{text-align:center;padding:32px 20px;color:var(--text2);font-size:14px;}
+.date-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);color:#B5D4F4;font-size:12px;padding:4px 10px;border-radius:20px;margin-bottom:12px;}
+.pendientes-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;margin-top:4px;}
+.pendientes-toggle span{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;}
+.pendientes-toggle .toggle-btn{font-size:12px;color:var(--blue-mid);}
+#pendientes-list.hidden{display:none;}
+
+/* Mes acumulado card */
+.mes-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:16px;}
+.mes-card-title{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;}
+.mes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mes-stat{text-align:center;}
+.mes-val{font-size:24px;font-weight:700;line-height:1;}
+.mes-lbl{font-size:11px;color:var(--text2);margin-top:3px;}
+.ritmo-bar-wrap{margin-top:12px;}
+.ritmo-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px;}
+.ritmo-track{height:10px;background:var(--gray-light);border-radius:5px;overflow:hidden;position:relative;}
+.ritmo-fill-real{position:absolute;top:0;left:0;height:100%;border-radius:5px;transition:width 0.8s ease;}
+.ritmo-ok{background:var(--green);}
+.ritmo-warn{background:var(--amber);}
+.ritmo-bad{background:var(--red);}
+.ritmo-meta{font-size:11px;margin-top:6px;text-align:center;font-weight:500;}
+
+/* Sin venta banner */
+.sin-venta-banner{background:var(--amber-light);border:1px solid var(--amber);border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.sin-venta-banner i{font-size:20px;color:var(--amber);flex-shrink:0;}
+.sin-venta-banner p{font-size:13px;color:var(--amber-text);line-height:1.4;}
+
+/* ===================== DASHBOARD SUPERVISOR ===================== */
+#screen-supervisor{display:none;min-height:100vh;padding-bottom:80px;}
+.sup-header{background:var(--blue);padding:44px 20px 20px;}
+.sup-back{color:#B5D4F4;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:12px;}
+.sup-title{color:#fff;font-size:20px;font-weight:600;}
+.sup-sub{color:#B5D4F4;font-size:13px;margin-top:2px;}
+
+/* Tabs */
+.tabs-wrap{display:flex;gap:0;background:rgba(255,255,255,0.1);border-radius:10px;padding:3px;margin-top:14px;}
+.tab-btn{flex:1;padding:8px 4px;text-align:center;font-size:12px;font-weight:600;color:#B5D4F4;border-radius:8px;cursor:pointer;transition:all 0.15s;}
+.tab-btn.active{background:#fff;color:var(--blue);}
+
+.sup-body{padding:16px;}
+
+/* Alerta banner */
+.alert-banner{background:var(--red-light);border:1px solid var(--red);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.alert-banner i{font-size:18px;color:var(--red);flex-shrink:0;}
+.alert-banner p{font-size:13px;color:var(--red-text);}
+
+/* Mesa cards */
+.mesa-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px;}
+.mesa-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.mesa-name{font-size:14px;font-weight:600;color:var(--text);}
+.mesa-pct{font-size:13px;font-weight:600;}
+.mesa-prog-track{height:6px;background:var(--gray-light);border-radius:3px;overflow:hidden;margin-bottom:10px;}
+.mesa-prog-fill{height:100%;border-radius:3px;transition:width 0.8s ease;}
+.mesa-prom-list{display:flex;flex-direction:column;gap:6px;}
+.mesa-prom-row{display:flex;align-items:center;gap:8px;}
+.mesa-prom-avatar{width:28px;height:28px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--blue-text);flex-shrink:0;}
+.mesa-prom-name{font-size:12px;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mesa-prom-pill{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;white-space:nowrap;}
+
+/* Ranking */
+.ranking-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.rank-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.rank-1{background:#FFD700;color:#6B4C00;}
+.rank-2{background:#C0C0C0;color:#444;}
+.rank-3{background:#CD7F32;color:#fff;}
+.rank-other{background:var(--gray-light);color:var(--gray-text);}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-size:14px;font-weight:500;color:var(--text);}
+.rank-detail{font-size:12px;color:var(--text2);margin-top:2px;}
+.rank-alert{width:20px;height:20px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--red);}
+
+/* Tendencia */
+.tendencia-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px;}
+.tendencia-title{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;}
+.chart-wrap{position:relative;height:80px;display:flex;align-items:flex-end;gap:4px;}
+.bar-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height 0.6s ease;}
+.bar-label{font-size:9px;color:var(--text2);}
+.bar-pct{font-size:9px;font-weight:600;color:var(--text2);}
+
+/* Misc */
+.no-obj-note{font-size:12px;color:var(--amber-text);background:var(--amber-light);padding:8px 12px;border-radius:8px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<!-- ===== PANTALLA 1: SUBIR ARCHIVOS ===== -->
+<div id="screen-login">
+  <div class="login-header">
+    <div class="login-logo"><i class="ti ti-chart-bar"></i></div>
+    <div class="login-title">Creación de Valor</div>
+    <div class="login-sub">DEL PALACIO S.A. · Área Sur / Costa Atlántica</div>
+  </div>
+  <div class="login-body">
+    <div class="login-card">
+      <h3 style="margin-bottom:12px;">Cargar archivos</h3>
+      <div class="upload-zone" id="z-tareas" onclick="document.getElementById('f-tareas').click()">
+        <input type="file" id="f-tareas" accept=".csv" style="display:none" onchange="onFile(this,'tareas')">
+        <div class="uz-icon"><i class="ti ti-file-text"></i></div>
+        <div class="uz-label">Tareas del día <span style="color:#E24B4A;">*</span></div>
+        <div class="uz-name" id="n-tareas"></div>
+      </div>
+      <div class="upload-zone" id="z-skus" onclick="document.getElementById('f-skus').click()">
+        <input type="file" id="f-skus" accept=".xlsx,.xls" style="display:none" onchange="onFile(this,'skus')">
+        <div class="uz-icon"><i class="ti ti-table"></i></div>
+        <div class="uz-label">SKUs de validación <span style="color:#E24B4A;">*</span></div>
+        <div class="uz-name" id="n-skus"></div>
+      </div>
+      <div class="upload-zone" id="z-venta" onclick="document.getElementById('f-venta').click()">
+        <input type="file" id="f-venta" accept=".xlsx,.xls" style="display:none" onchange="onFile(this,'venta')">
+        <div class="uz-icon"><i class="ti ti-shopping-cart"></i></div>
+        <div class="uz-label">Venta del día <span class="optional-tag">opcional</span></div>
+        <div class="uz-name" id="n-venta"></div>
+      </div>
+      <div class="upload-zone" id="z-obj" onclick="document.getElementById('f-obj').click()">
+        <input type="file" id="f-obj" accept=".xlsx,.xls" style="display:none" onchange="onFile(this,'obj')">
+        <div class="uz-icon"><i class="ti ti-target"></i></div>
+        <div class="uz-label">Objetivos del mes <span class="optional-tag">opcional</span></div>
+        <div class="uz-name" id="n-obj"></div>
+      </div>
+      <button class="btn-main" id="btn-procesar" disabled onclick="procesar()">Procesar y ver resultados</button>
+      <div class="upload-status" id="upload-status">Subí los archivos obligatorios para continuar</div>
+    </div>
+    <div class="login-card">
+      <h3>Cómo usar</h3>
+      <div style="margin-top:12px;">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div><div class="step-text">CSV de tareas + XLSX de SKUs — obligatorios</div></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div><div class="step-text">Venta del día — después de las 14:30</div><div class="step-sub">Sin este archivo se muestra solo el acumulado histórico</div></div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div><div class="step-text">Objetivos del mes — para ver ritmo vs meta</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANTALLA 2: SELECTOR ===== -->
+<div id="screen-selector">
+  <div class="sel-header">
+    <div class="date-badge" style="margin-bottom:8px;"><i class="ti ti-calendar" style="font-size:14px;"></i><span id="sel-fecha"></span></div>
+    <div class="sel-title">¿Cómo querés entrar?</div>
+    <div class="sel-sub">Elegí tu rol para ver la vista correspondiente</div>
+  </div>
+  <div class="sel-body">
+    <div class="role-row">
+      <div class="role-btn active" id="role-promotor" onclick="setRole('promotor')">
+        <i class="ti ti-user"></i>
+        <span>Promotor</span>
+      </div>
+      <div class="role-btn" id="role-supervisor" onclick="setRole('supervisor')">
+        <i class="ti ti-users"></i>
+        <span>Supervisor</span>
+      </div>
+    </div>
+    <div id="selector-promotor">
+      <div class="search-wrap">
+        <i class="ti ti-search search-icon"></i>
+        <input type="text" id="search-prom" placeholder="Buscar promotor..." oninput="filtrarProms()" autocomplete="off">
+      </div>
+      <div id="proms-list"></div>
+    </div>
+    <div id="selector-supervisor" style="display:none;">
+      <div id="mesas-list"></div>
+    </div>
+    <div style="margin-top:16px;">
+      <button onclick="resetApp()" style="width:100%;padding:12px;background:none;border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text2);cursor:pointer;font-family:inherit;">
+        <i class="ti ti-upload" style="vertical-align:-2px;margin-right:4px;"></i> Cargar nuevos archivos
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANTALLA 3: DASHBOARD PROMOTOR ===== -->
+<div id="screen-dashboard">
+  <div class="dash-header">
+    <div class="dash-back" onclick="showSelector()">
+      <i class="ti ti-arrow-left" style="font-size:16px;"></i> Volver
+    </div>
+    <div class="dash-top">
+      <div>
+        <div class="dash-greeting">Hola,</div>
+        <div class="dash-name" id="d-nombre"></div>
+      </div>
+      <div class="dash-avatar" id="d-avatar"></div>
+    </div>
+    <div class="date-badge"><i class="ti ti-calendar" style="font-size:14px;"></i><span id="d-fecha"></span></div>
+    <div class="progress-card" style="margin-top:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+        <div>
+          <div class="pct-big" id="d-pct">—</div>
+          <div class="pct-lbl" id="d-pct-lbl">sin venta cargada</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="color:#5DCAA5;font-size:22px;font-weight:700;" id="d-val-num">0</div>
+          <div style="color:#B5D4F4;font-size:12px;">validadas hoy</div>
+        </div>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="d-prog" style="width:0%;"></div></div>
+      <div class="prog-row">
+        <span class="prog-sub" id="d-prog-left">Planificación del día</span>
+        <span class="prog-sub" id="d-total-sub"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div id="sin-venta-banner" class="sin-venta-banner" style="display:none;">
+      <i class="ti ti-clock"></i>
+      <p>Venta del día no cargada. Mostrando planificación y acumulado histórico. Cargá la venta después de las 14:30 para ver el avance en tiempo real.</p>
+    </div>
+
+    <div class="stats-row" id="stats-dia" style="display:none;">
+      <div class="stat-card">
+        <div class="stat-val val-green" id="d-s-val">0</div>
+        <div class="stat-lbl">Validadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val val-red" id="d-s-pend">0</div>
+        <div class="stat-lbl">Pendientes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val val-gray" id="d-s-total">0</div>
+        <div class="stat-lbl">Enviadas</div>
+      </div>
+    </div>
+
+    <div class="stats-row" id="stats-sin-venta">
+      <div class="stat-card">
+        <div class="stat-val val-blue" id="d-sv-enviadas">0</div>
+        <div class="stat-lbl">Tareas hoy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val val-green" id="d-sv-historial">0</div>
+        <div class="stat-lbl">Mes acum.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val val-gray" id="d-sv-objetivo">—</div>
+        <div class="stat-lbl">Objetivo</div>
+      </div>
+    </div>
+
+    <div class="mes-card" id="mes-card">
+      <div class="mes-card-title">Acumulado del mes</div>
+      <div class="mes-grid">
+        <div class="mes-stat">
+          <div class="mes-val val-green" id="m-validadas-hist">0</div>
+          <div class="mes-lbl">Históricas</div>
+        </div>
+        <div class="mes-stat">
+          <div class="mes-val val-blue" id="m-estimado">0</div>
+          <div class="mes-lbl">Est. hoy</div>
+        </div>
+      </div>
+      <div class="ritmo-bar-wrap" id="ritmo-wrap" style="display:none;">
+        <div class="ritmo-label">
+          <span>Ritmo vs objetivo</span>
+          <span id="ritmo-pct-lbl">0%</span>
+        </div>
+        <div class="ritmo-track">
+          <div class="ritmo-fill-real" id="ritmo-fill" style="width:0%"></div>
+        </div>
+        <div class="ritmo-meta" id="ritmo-meta"></div>
+      </div>
+      <div id="no-obj-note" class="no-obj-note" style="display:none;margin-top:10px;">Sin archivo de objetivos cargado — subí el XLSX para ver el ritmo vs meta.</div>
+    </div>
+
+    <div class="section-hdr" id="lbl-validadas-hdr" style="display:none;">Tareas validadas hoy</div>
+    <div id="list-validadas"></div>
+
+    <div class="pendientes-toggle" onclick="togglePendientes()">
+      <span id="lbl-pendientes-hdr">Tareas del día</span>
+      <span class="toggle-btn" id="toggle-lbl">Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i></span>
+    </div>
+    <div id="pendientes-list" class="hidden"></div>
+  </div>
+</div>
+
+<!-- ===== PANTALLA 4: DASHBOARD SUPERVISOR ===== -->
+<div id="screen-supervisor">
+  <div class="sup-header">
+    <div class="sup-back" onclick="showSelector()">
+      <i class="ti ti-arrow-left" style="font-size:16px;"></i> Volver
+    </div>
+    <div class="sup-title" id="sup-title">Equipo completo</div>
+    <div class="sup-sub" id="sup-sub"></div>
+    <div class="tabs-wrap">
+      <div class="tab-btn active" id="tab-mesas" onclick="supTab('mesas')">Por mesa</div>
+      <div class="tab-btn" id="tab-ranking" onclick="supTab('ranking')">Ranking</div>
+      <div class="tab-btn" id="tab-tendencia" onclick="supTab('tendencia')">Tendencia</div>
+    </div>
+  </div>
+  <div class="sup-body">
+    <div id="sup-panel-mesas"></div>
+    <div id="sup-panel-ranking" style="display:none;"></div>
+    <div id="sup-panel-tendencia" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+// ==================== STATE ====================
+var files = {tareas:null, skus:null, venta:null, obj:null};
+var appData = null;
+var currentRole = 'promotor';
+var currentSupMesa = null;
+
+// ==================== UTILS ====================
+function readXlsx(f) {
+  return new Promise(function(res) {
+    var r = new FileReader();
+    r.onload = function(e) {
+      var wb = XLSX.read(e.target.result, {type:'array'});
+      res(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]));
+    };
+    r.readAsArrayBuffer(f);
+  });
+}
+
+function readCsv(f) {
+  return new Promise(function(res) {
+    Papa.parse(f, {header:true, delimiter:';', skipEmptyLines:true, complete:function(r){res(r.data);}});
+  });
+}
+
+function normSku(s) { return String(s).replace('-U','').trim(); }
+
+function initials(name) {
+  return (name||'?').split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
+}
+
+function fmtFecha(d) {
+  var s = String(d);
+  return s.slice(6,8)+'/'+s.slice(4,6)+'/'+s.slice(0,4);
+}
+
+function pctColor(p) { return p>=80?'pill-green':p>=50?'pill-amber':'pill-red'; }
+
+function barColor(p) { return p>=80?'ritmo-ok':p>=50?'ritmo-warn':'ritmo-bad'; }
+
+function mesaColor(p) { return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)'; }
+
+function calcDiaDelMes(hoyNum) {
+  var s = String(hoyNum);
+  return parseInt(s.slice(6,8))||1;
+}
+
+// ==================== FILE UPLOAD ====================
+function onFile(input, key) {
+  var f = input.files[0];
+  if (!f) return;
+  files[key] = f;
+  var zone = document.getElementById('z-'+key);
+  zone.classList.add(key==='venta'||key==='obj'?'optional-done':'done');
+  var ic = zone.querySelector('.uz-icon i');
+  if (ic) ic.className = 'ti ti-circle-check';
+  document.getElementById('n-'+key).textContent = f.name;
+  var ok = files.tareas && files.skus;
+  document.getElementById('btn-procesar').disabled = !ok;
+  document.getElementById('upload-status').textContent = ok ? 'Listo para procesar' : 'Subí los archivos obligatorios para continuar';
+}
+
+// ==================== PROCESAR ====================
+async function procesar() {
+  var btn = document.getElementById('btn-procesar');
+  btn.textContent = 'Procesando...';
+  btn.disabled = true;
+
+  var promises = [readCsv(files.tareas), readXlsx(files.skus)];
+  if (files.venta) promises.push(readXlsx(files.venta));
+  if (files.obj) promises.push(readXlsx(files.obj));
+
+  var results = await Promise.all(promises);
+  var rawT = results[0];
+  var rawS = results[1];
+  var rawV = files.venta ? results[2] : null;
+  var rawO = files.obj ? (files.venta ? results[3] : results[2]) : null;
+
+  var tieneVenta = !!rawV;
+
+  // Detectar día más reciente
+  var dias = [];
+  var diasSet = {};
+  rawT.forEach(function(r) {
+    if (r.dia && !diasSet[r.dia]) { diasSet[r.dia]=true; dias.push(r.dia); }
+  });
+  dias.sort();
+  var hoy = dias[dias.length-1];
+
+  // Acumulado histórico
+  var historial = {};
+  rawT.forEach(function(r) {
+    if (String(r.dia)===String(hoy)) return;
+    if (!r.desc_ddc_wh || !r.desc_ddc_wh.toUpperCase().includes('PALACIO')) return;
+    if (r.PILAR !== 'VALUE_CREATION') return;
+    if (Number(r.TAREAS_VALIDADAS)>0 || r.TAREAS_VALIDADAS==='1') {
+      var p = r.PROMOTOR || 'SIN ASIGNAR';
+      historial[p] = (historial[p]||0)+1;
+    }
+  });
+
+  // Tareas de hoy
+  var tareasHoy = rawT.filter(function(r) {
+    return r.desc_ddc_wh &&
+      r.desc_ddc_wh.toUpperCase().includes('PALACIO') &&
+      r.PILAR === 'VALUE_CREATION' &&
+      String(r.dia) === String(hoy) &&
+      (Number(r.TAREAS_VALIDADAS)===0 || r.TAREAS_VALIDADAS==='0');
+  });
+
+  tareasHoy.forEach(function(r) {
+    var cid = String(r.cliente_id||'');
+    r._pdv = parseInt(cid.slice(-5)) || null;
+    r._tu = String(r.TAREA||'').toUpperCase();
+  });
+
+  // SKU map
+  var skuMap = {};
+  rawS.forEach(function(r) {
+    var k = String(r.full_description||'').toUpperCase();
+    if (!skuMap[k]) skuMap[k] = [];
+    skuMap[k].push(normSku(r.sku_id));
+  });
+
+  // Venta map
+  var ventaPdv = {};
+  var pdvNombre = {};
+  if (rawV) {
+    rawV.forEach(function(r) {
+      var cod = Number(r['Cod. Cliente']);
+      var sku = String(r['Código']);
+      if (!ventaPdv[cod]) ventaPdv[cod] = new Set();
+      ventaPdv[cod].add(sku);
+      if (!pdvNombre[cod]) pdvNombre[cod] = r['Descripción']||'';
+    });
+  }
+
+  // Objetivos map
+  var objMap = {};
+  var mesaMap = {};
+  if (rawO) {
+    rawO.forEach(function(r) {
+      var p = String(r.PROMOTOR||r.promotor||'').trim();
+      if (!p) return;
+      objMap[p] = Number(r.OBJETIVO_MES||r.objetivo_mes||r.Objetivo||0)||0;
+      mesaMap[p] = String(r.MESA||r.mesa||r.Mesa||'').trim();
+    });
+  }
+
+  // Procesar promotores
+  var promotores = {};
+  tareasHoy.forEach(function(r) {
+    var p = r.PROMOTOR || 'SIN ASIGNAR';
+    if (!promotores[p]) {
+      promotores[p] = {enviadas:0, validadas:[], pendientes:[], historial:historial[p]||0, objetivo:objMap[p]||null, mesa:mesaMap[p]||null};
+    }
+    promotores[p].enviadas++;
+
+    if (tieneVenta) {
+      var skus = skuMap[r._tu];
+      if (skus && r._pdv) {
+        var vendidos = ventaPdv[r._pdv] || new Set();
+        var match = null;
+        for (var i=0; i<skus.length; i++) {
+          if (vendidos.has(skus[i])) { match = skus[i]; break; }
+        }
+        if (match) {
+          promotores[p].validadas.push({tarea:r.TAREA, pdv:r._pdv, nombre:pdvNombre[r._pdv]||'', sku:match});
+          return;
+        }
+      }
+      promotores[p].pendientes.push({tarea:r.TAREA, pdv:r._pdv, nombre:pdvNombre[r._pdv]||''});
+    } else {
+      promotores[p].pendientes.push({tarea:r.TAREA, pdv:r._pdv, nombre:''});
+    }
+  });
+
+  // Agregar promotores que solo tienen historial
+  Object.keys(objMap).forEach(function(p) {
+    if (!promotores[p]) {
+      promotores[p] = {enviadas:0, validadas:[], pendientes:[], historial:historial[p]||0, objetivo:objMap[p]||null, mesa:mesaMap[p]||null};
+    }
+  });
+
+  // Tendencia histórica
+  var tendenciaData = {};
+  rawT.forEach(function(r) {
+    if (!r.desc_ddc_wh || !r.desc_ddc_wh.toUpperCase().includes('PALACIO')) return;
+    if (r.PILAR !== 'VALUE_CREATION') return;
+    var d = String(r.dia);
+    if (!tendenciaData[d]) tendenciaData[d] = {validadas:0, enviadas:0};
+    tendenciaData[d].enviadas++;
+    if (Number(r.TAREAS_VALIDADAS)>0) tendenciaData[d].validadas++;
+  });
+  var tendenciaDias = Object.keys(tendenciaData).sort().slice(-7);
+
+  appData = {hoy:hoy, promotores:promotores, tieneVenta:tieneVenta, tendenciaData:tendenciaData, tendenciaDias:tendenciaDias};
+  showSelector();
+}
+
+// ==================== SELECTOR ====================
+function showSelector() {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-dashboard').style.display = 'none';
+  document.getElementById('screen-supervisor').style.display = 'none';
+  document.getElementById('screen-selector').style.display = 'block';
+  document.getElementById('sel-fecha').textContent = fmtFecha(appData.hoy);
+  setRole(currentRole);
+}
+
+function setRole(role) {
+  currentRole = role;
+  document.getElementById('role-promotor').classList.toggle('active', role==='promotor');
+  document.getElementById('role-supervisor').classList.toggle('active', role==='supervisor');
+  document.getElementById('selector-promotor').style.display = role==='promotor'?'block':'none';
+  document.getElementById('selector-supervisor').style.display = role==='supervisor'?'block':'none';
+  if (role==='promotor') renderProms('');
+  else renderMesasSelector();
+}
+
+function renderProms(q) {
+  var el = document.getElementById('proms-list');
+  var proms = Object.entries(appData.promotores)
+    .filter(function(e){ return e[0].toUpperCase().includes(q.toUpperCase()); })
+    .sort(function(a,b){
+      var pa = a[1].enviadas>0 ? a[1].validadas.length/a[1].enviadas : 0;
+      var pb = b[1].enviadas>0 ? b[1].validadas.length/b[1].enviadas : 0;
+      return pb-pa;
+    });
+  el.innerHTML = '';
+  proms.forEach(function(entry) {
+    var nombre = entry[0];
+    var data = entry[1];
+    var pct = data.enviadas>0 ? Math.round(data.validadas.length/data.enviadas*1000)/10 : null;
+    var ini = initials(nombre);
+    var div = document.createElement('div');
+    div.className = 'prom-card';
+    var pillHtml = '';
+    if (pct !== null) {
+      pillHtml = '<span class="pct-pill '+pctColor(pct)+'">'+pct+'%</span>';
+    } else if (!appData.tieneVenta) {
+      pillHtml = '<span class="pct-pill pill-gray">'+data.enviadas+' tareas</span>';
+    }
+    div.innerHTML =
+      '<div class="prom-avatar">'+ini+'</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="prom-name">'+nombre+'</div>'+
+        '<div class="prom-stats">'+(appData.tieneVenta ? data.validadas.length+' validadas · ':'')+data.enviadas+' enviadas · hist: '+data.historial+'</div>'+
+      '</div>'+
+      pillHtml+
+      '<i class="ti ti-chevron-right prom-arrow"></i>';
+    div.onclick = (function(n){ return function(){ showDashboard(n); }; })(nombre);
+    el.appendChild(div);
+  });
+  if (!proms.length) el.innerHTML = '<div class="empty-state">No se encontraron promotores</div>';
+}
+
+function filtrarProms() { renderProms(document.getElementById('search-prom').value); }
+
+function renderMesasSelector() {
+  var el = document.getElementById('mesas-list');
+  var mesas = new Set();
+  Object.values(appData.promotores).forEach(function(d){ if(d.mesa) mesas.add(d.mesa); });
+
+  el.innerHTML = '';
+
+  var all = document.createElement('div');
+  all.className = 'prom-card';
+  all.innerHTML =
+    '<div class="prom-avatar sup"><i class="ti ti-users" style="font-size:16px;"></i></div>'+
+    '<div style="flex:1;"><div class="prom-name">Equipo completo</div><div class="prom-stats">Todos los promotores</div></div>'+
+    '<i class="ti ti-chevron-right prom-arrow"></i>';
+  all.onclick = function(){ showSupervisor(null); };
+  el.appendChild(all);
+
+  mesas.forEach(function(mesa) {
+    var proms = Object.entries(appData.promotores).filter(function(e){ return e[1].mesa===mesa; });
+    var totalEnv = proms.reduce(function(s,e){ return s+e[1].enviadas; }, 0);
+    var totalVal = proms.reduce(function(s,e){ return s+e[1].validadas.length; }, 0);
+    var pct = totalEnv>0 ? Math.round(totalVal/totalEnv*1000)/10 : 0;
+    var div = document.createElement('div');
+    div.className = 'prom-card';
+    div.innerHTML =
+      '<div class="prom-avatar sup">'+initials(mesa)+'</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="prom-name">'+mesa+'</div>'+
+        '<div class="prom-stats">'+proms.length+' promotores · '+totalVal+' val / '+totalEnv+' env</div>'+
+      '</div>'+
+      (appData.tieneVenta ? '<span class="pct-pill '+pctColor(pct)+'">'+pct+'%</span>' : '')+
+      '<i class="ti ti-chevron-right prom-arrow"></i>';
+    div.onclick = (function(m){ return function(){ showSupervisor(m); }; })(mesa);
+    el.appendChild(div);
+  });
+}
+
+// ==================== DASHBOARD PROMOTOR ====================
+function showDashboard(nombre) {
+  var data = appData.promotores[nombre];
+  document.getElementById('screen-selector').style.display = 'none';
+  document.getElementById('screen-dashboard').style.display = 'block';
+  document.getElementById('d-nombre').textContent = nombre;
+  document.getElementById('d-avatar').textContent = initials(nombre);
+  document.getElementById('d-fecha').textContent = fmtFecha(appData.hoy);
+
+  var tieneVenta = appData.tieneVenta;
+  var historial = data.historial || 0;
+  var acumuladoTotal = historial + (tieneVenta ? data.validadas.length : 0);
+  var objetivo = data.objetivo;
+
+  document.getElementById('sin-venta-banner').style.display = tieneVenta ? 'none' : 'flex';
+
+  if (tieneVenta) {
+    var pct = data.enviadas>0 ? Math.round(data.validadas.length/data.enviadas*1000)/10 : 0;
+    document.getElementById('d-pct').textContent = pct+'%';
+    document.getElementById('d-pct-lbl').textContent = 'cobertura del día';
+    document.getElementById('d-prog').style.width = Math.min(pct,100)+'%';
+    document.getElementById('d-prog-left').textContent = data.validadas.length+' validadas';
+    document.getElementById('d-total-sub').textContent = data.enviadas+' enviadas';
+    document.getElementById('stats-dia').style.display = 'grid';
+    document.getElementById('stats-sin-venta').style.display = 'none';
+    document.getElementById('d-s-val').textContent = data.validadas.length;
+    document.getElementById('d-s-pend').textContent = data.pendientes.length;
+    document.getElementById('d-s-total').textContent = data.enviadas;
+    document.getElementById('lbl-validadas-hdr').style.display = 'block';
+  } else {
+    document.getElementById('d-pct').textContent = '—';
+    document.getElementById('d-pct-lbl').textContent = 'sin venta cargada';
+    document.getElementById('d-prog').style.width = '0%';
+    document.getElementById('d-prog-left').textContent = 'Planificación del día';
+    document.getElementById('d-total-sub').textContent = data.enviadas+' tareas planificadas';
+    document.getElementById('stats-dia').style.display = 'none';
+    document.getElementById('stats-sin-venta').style.display = 'grid';
+    document.getElementById('d-sv-enviadas').textContent = data.enviadas;
+    document.getElementById('d-sv-historial').textContent = historial;
+    document.getElementById('d-sv-objetivo').textContent = objetivo || '—';
+    document.getElementById('lbl-validadas-hdr').style.display = 'none';
+  }
+
+  document.getElementById('m-validadas-hist').textContent = historial;
+  document.getElementById('m-estimado').textContent = tieneVenta ? data.validadas.length : '~'+Math.round(data.enviadas*0.3);
+
+  if (objetivo) {
+    document.getElementById('ritmo-wrap').style.display = 'block';
+    document.getElementById('no-obj-note').style.display = 'none';
+    var diasMes = 31;
+    var diaActual = calcDiaDelMes(appData.hoy);
+    var mediaNecesaria = objetivo/diasMes;
+    var mediaReal = acumuladoTotal/Math.max(diaActual,1);
+    var ritmoRel = Math.min(Math.round(mediaReal/mediaNecesaria*100),150);
+    document.getElementById('ritmo-fill').style.width = Math.min(ritmoRel,100)+'%';
+    document.getElementById('ritmo-fill').className = 'ritmo-fill-real '+barColor(ritmoRel);
+    document.getElementById('ritmo-pct-lbl').textContent = ritmoRel+'%';
+    var falta = Math.max(objetivo-acumuladoTotal,0);
+    var diasFaltan = diasMes-diaActual;
+    var ritmoNec = diasFaltan>0 ? Math.ceil(falta/diasFaltan) : falta;
+    if (ritmoRel>=100) {
+      document.getElementById('ritmo-meta').innerHTML = '<span style="color:var(--green);">✓ En ritmo — '+acumuladoTotal+'/'+objetivo+' validadas</span>';
+    } else {
+      document.getElementById('ritmo-meta').innerHTML = '<span style="color:var(--red);">Necesitás '+ritmoNec+'/día para alcanzar el objetivo (faltan '+diasFaltan+' días)</span>';
+    }
+  } else {
+    document.getElementById('ritmo-wrap').style.display = 'none';
+    document.getElementById('no-obj-note').style.display = 'block';
+  }
+
+  // Tareas validadas
+  var lv = document.getElementById('list-validadas');
+  lv.innerHTML = '';
+  if (tieneVenta) {
+    if (!data.validadas.length) {
+      lv.innerHTML = '<div class="empty-state" style="padding:16px 0;"><i class="ti ti-mood-sad" style="font-size:24px;display:block;margin-bottom:6px;"></i>Aún no hay tareas validadas</div>';
+    } else {
+      data.validadas.forEach(function(t) {
+        var c = document.createElement('div');
+        c.className = 'task-card';
+        c.innerHTML =
+          '<div class="task-row">'+
+            '<div class="task-ic ic-green"><i class="ti ti-check"></i></div>'+
+            '<div style="flex:1;min-width:0;">'+
+              '<div class="task-name">'+t.tarea+'</div>'+
+              '<div class="task-pdv">'+(t.nombre||'PDV '+t.pdv)+' · cod. '+t.pdv+'</div>'+
+              '<span class="task-badge tb-green">Validada · SKU '+t.sku+'</span>'+
+            '</div>'+
+          '</div>';
+        lv.appendChild(c);
+      });
+    }
+  }
+
+  // Pendientes
+  document.getElementById('lbl-pendientes-hdr').textContent = tieneVenta ? 'Pendientes de validar' : 'Tareas planificadas hoy';
+  var lp = document.getElementById('pendientes-list');
+  lp.innerHTML = '';
+  var listaTareas = data.pendientes;
+  listaTareas.slice(0,30).forEach(function(t) {
+    var c = document.createElement('div');
+    c.className = 'task-card';
+    if (tieneVenta) {
+      var sinVenta = !t.nombre && !t.pdv;
+      c.innerHTML =
+        '<div class="task-row">'+
+          '<div class="task-ic '+(sinVenta?'ic-gray':'ic-amber')+'"><i class="ti ti-clock"></i></div>'+
+          '<div style="flex:1;min-width:0;">'+
+            '<div class="task-name">'+t.tarea+'</div>'+
+            '<div class="task-pdv">'+(t.nombre ? t.nombre+' · cod. '+t.pdv : 'PDV '+t.pdv)+'</div>'+
+            '<span class="task-badge '+(sinVenta?'tb-gray':'tb-amber')+'">'+(sinVenta?'Sin venta registrada':'Sin compra del SKU')+'</span>'+
+          '</div>'+
+        '</div>';
+    } else {
+      c.innerHTML =
+        '<div class="task-row">'+
+          '<div class="task-ic ic-blue"><i class="ti ti-calendar-event"></i></div>'+
+          '<div style="flex:1;min-width:0;">'+
+            '<div class="task-name">'+t.tarea+'</div>'+
+            (t.pdv ? '<div class="task-pdv">PDV '+t.pdv+'</div>' : '')+
+            '<span class="task-badge" style="background:var(--blue-light);color:var(--blue-text);">Planificada</span>'+
+          '</div>'+
+        '</div>';
+    }
+    lp.appendChild(c);
+  });
+  if (listaTareas.length > 30) {
+    var m = document.createElement('div');
+    m.style.cssText = 'text-align:center;padding:10px;font-size:13px;color:var(--text2);';
+    m.textContent = '... y '+(listaTareas.length-30)+' tareas más';
+    lp.appendChild(m);
+  }
+  document.getElementById('toggle-lbl').innerHTML = 'Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';
+  lp.classList.add('hidden');
+}
+
+function togglePendientes() {
+  var l = document.getElementById('pendientes-list');
+  var t = document.getElementById('toggle-lbl');
+  if (l.classList.contains('hidden')) {
+    l.classList.remove('hidden');
+    t.innerHTML = 'Ocultar <i class="ti ti-chevron-up" style="vertical-align:-2px;"></i>';
+  } else {
+    l.classList.add('hidden');
+    t.innerHTML = 'Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';
+  }
+}
+
+// ==================== DASHBOARD SUPERVISOR ====================
+function showSupervisor(mesa) {
+  currentSupMesa = mesa;
+  document.getElementById('screen-selector').style.display = 'none';
+  document.getElementById('screen-supervisor').style.display = 'block';
+  document.getElementById('sup-title').textContent = mesa || 'Equipo completo';
+
+  var tieneVenta = appData.tieneVenta;
+  var allProms = Object.entries(appData.promotores).filter(function(e){ return mesa===null || e[1].mesa===mesa; });
+  var totalEnv = allProms.reduce(function(s,e){ return s+e[1].enviadas; }, 0);
+  var totalVal = allProms.reduce(function(s,e){ return s+e[1].validadas.length; }, 0);
+  var totalHist = allProms.reduce(function(s,e){ return s+e[1].historial; }, 0);
+  var pct = totalEnv>0 ? Math.round(totalVal/totalEnv*1000)/10 : 0;
+
+  document.getElementById('sup-sub').textContent = tieneVenta ?
+    totalVal+' validadas de '+totalEnv+' enviadas · '+pct+'% cobertura' :
+    totalEnv+' tareas planificadas · '+totalHist+' validadas en el mes';
+
+  supTab('mesas');
+}
+
+var currentTab = 'mesas';
+
+function supTab(tab) {
+  currentTab = tab;
+  ['mesas','ranking','tendencia'].forEach(function(t) {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('sup-panel-'+t).style.display = t===tab?'block':'none';
+  });
+  if (tab==='mesas') renderSupMesas();
+  else if (tab==='ranking') renderSupRanking();
+  else renderSupTendencia();
+}
+
+function renderSupMesas() {
+  var el = document.getElementById('sup-panel-mesas');
+  var allProms = Object.entries(appData.promotores).filter(function(e){ return currentSupMesa===null || e[1].mesa===currentSupMesa; });
+  var tieneVenta = appData.tieneVenta;
+
+  var alertHtml = '';
+  if (tieneVenta) {
+    var bajos = allProms.filter(function(e){ return e[1].enviadas>0 && e[1].validadas.length===0; }).map(function(e){ return e[0]; });
+    if (bajos.length) {
+      alertHtml = '<div class="alert-banner"><i class="ti ti-alert-triangle"></i><p><strong>'+bajos.length+' promotor'+(bajos.length>1?'es':'')+' sin validaciones:</strong> '+bajos.join(', ')+'</p></div>';
+    }
+  }
+
+  var mesas = {};
+  allProms.forEach(function(e) {
+    var mesa = e[1].mesa || 'Sin mesa';
+    if (!mesas[mesa]) mesas[mesa] = [];
+    mesas[mesa].push(e);
+  });
+
+  var html = alertHtml;
+
+  var totalEnv = allProms.reduce(function(s,e){ return s+e[1].enviadas; }, 0);
+  var totalVal = allProms.reduce(function(s,e){ return s+e[1].validadas.length; }, 0);
+  var totalHist = allProms.reduce(function(s,e){ return s+e[1].historial; }, 0);
+
+  html += '<div class="stats-row" style="margin-bottom:16px;">'+
+    '<div class="stat-card"><div class="stat-val '+(tieneVenta?'val-green':'val-blue')+'">'+(tieneVenta?totalVal:allProms.length)+'</div><div class="stat-lbl">'+(tieneVenta?'Validadas hoy':'Promotores')+'</div></div>'+
+    '<div class="stat-card"><div class="stat-val val-gray">'+totalEnv+'</div><div class="stat-lbl">'+(tieneVenta?'Enviadas':'Tareas hoy')+'</div></div>'+
+    '<div class="stat-card"><div class="stat-val val-green">'+totalHist+'</div><div class="stat-lbl">Hist. mes</div></div>'+
+  '</div>';
+
+  Object.keys(mesas).sort().forEach(function(mesa) {
+    var proms = mesas[mesa];
+    var mEnv = proms.reduce(function(s,e){ return s+e[1].enviadas; }, 0);
+    var mVal = proms.reduce(function(s,e){ return s+e[1].validadas.length; }, 0);
+    var mPct = mEnv>0 ? Math.round(mVal/mEnv*100) : 0;
+    var color = mesaColor(mPct);
+
+    var promsHtml = proms.sort(function(a,b){
+      var pa = a[1].enviadas>0 ? a[1].validadas.length/a[1].enviadas : 0;
+      var pb = b[1].enviadas>0 ? b[1].validadas.length/b[1].enviadas : 0;
+      return pb-pa;
+    }).map(function(e) {
+      var nombre = e[0];
+      var data = e[1];
+      var pp = data.enviadas>0 ? Math.round(data.validadas.length/data.enviadas*100) : 0;
+      var pillCls = tieneVenta ? pctColor(pp) : 'pill-gray';
+      var pillTxt = tieneVenta ? pp+'%' : data.enviadas+' t';
+      var alert = tieneVenta && data.enviadas>0 && data.validadas.length===0 ? '<i class="ti ti-alert-circle" style="color:var(--red);font-size:14px;"></i>' : '';
+      return '<div class="mesa-prom-row">'+
+        '<div class="mesa-prom-avatar">'+initials(nombre)+'</div>'+
+        '<div class="mesa-prom-name">'+nombre+'</div>'+
+        alert+
+        '<span class="mesa-prom-pill '+pillCls+'">'+pillTxt+'</span>'+
+      '</div>';
+    }).join('');
+
+    html += '<div class="mesa-card">'+
+      '<div class="mesa-header">'+
+        '<div class="mesa-name">'+mesa+'</div>'+
+        (tieneVenta ? '<div class="mesa-pct" style="color:'+color+';">'+mPct+'%</div>' : '<div class="mesa-pct" style="color:var(--gray);">'+proms.length+' promotores</div>')+
+      '</div>'+
+      (tieneVenta ? '<div class="mesa-prog-track"><div class="mesa-prog-fill" style="width:'+mPct+'%;background:'+color+';"></div></div>' : '')+
+      '<div class="mesa-prom-list">'+promsHtml+'</div>'+
+    '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+function renderSupRanking() {
+  var el = document.getElementById('sup-panel-ranking');
+  var tieneVenta = appData.tieneVenta;
+  var allProms = Object.entries(appData.promotores)
+    .filter(function(e){ return currentSupMesa===null || e[1].mesa===currentSupMesa; })
+    .sort(function(a,b){
+      if (tieneVenta) {
+        var pa = a[1].enviadas>0 ? a[1].validadas.length/a[1].enviadas : 0;
+        var pb = b[1].enviadas>0 ? b[1].validadas.length/b[1].enviadas : 0;
+        return pb-pa;
+      } else {
+        return (b[1].historial||0)-(a[1].historial||0);
+      }
+    });
+
+  var html = '';
+  if (!tieneVenta) {
+    html += '<div class="no-obj-note">Sin venta cargada — ranking por validaciones históricas del mes</div>';
+  }
+
+  allProms.forEach(function(entry, i) {
+    var nombre = entry[0];
+    var data = entry[1];
+    var rank = i+1;
+    var rankCls = rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
+    var pct = tieneVenta && data.enviadas>0 ? Math.round(data.validadas.length/data.enviadas*100) : null;
+    var alert = tieneVenta && data.enviadas>0 && data.validadas.length===0;
+
+    var ritmoHtml = '';
+    if (data.objetivo) {
+      var diasMes = 31;
+      var diaAct = calcDiaDelMes(appData.hoy);
+      var acum = data.historial + (tieneVenta ? data.validadas.length : 0);
+      var ritmo = Math.round(acum/Math.max(diaAct,1)*10)/10;
+      var nec = Math.round(data.objetivo/diasMes*10)/10;
+      var ok = ritmo >= nec;
+      ritmoHtml = ' · ritmo '+ritmo+'/'+nec+' <span style="color:'+(ok?'var(--green)':'var(--red)')+';">'+(ok?'✓':'✗')+'</span>';
+    }
+
+    html += '<div class="ranking-card">'+
+      '<div class="rank-num '+rankCls+'">'+rank+'</div>'+
+      '<div class="rank-info">'+
+        '<div class="rank-name">'+nombre+'</div>'+
+        '<div class="rank-detail">'+(tieneVenta ? data.validadas.length+' val / '+data.enviadas+' env'+(pct!==null?' ('+pct+'%)':'') : data.historial+' hist. mes')+ritmoHtml+'</div>'+
+      '</div>'+
+      (alert ? '<div class="rank-alert"><i class="ti ti-alert-triangle"></i></div>' : '')+
+    '</div>';
+  });
+
+  el.innerHTML = html || '<div class="empty-state">Sin datos</div>';
+}
+
+function renderSupTendencia() {
+  var el = document.getElementById('sup-panel-tendencia');
+  var dias = appData.tendenciaDias;
+  var td = appData.tendenciaData;
+
+  if (!dias.length) {
+    el.innerHTML = '<div class="empty-state">Sin datos históricos suficientes</div>';
+    return;
+  }
+
+  var barsHtml = dias.map(function(d) {
+    var dat = td[d] || {validadas:0, enviadas:0};
+    var pct = dat.enviadas>0 ? Math.round(dat.validadas/dat.enviadas*100) : 0;
+    var color = pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+    var isHoy = String(d)===String(appData.hoy);
+    var label = String(d).slice(6,8)+'/'+String(d).slice(4,6);
+    return '<div class="bar-day">'+
+      '<div class="bar-pct">'+pct+'%</div>'+
+      '<div class="bar-fill" style="height:'+Math.max(pct,4)+'%;background:'+color+';'+(isHoy?'border:2px solid var(--blue);':'')+'"></div>'+
+      '<div class="bar-label" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+label+'</div>'+
+    '</div>';
+  }).join('');
+
+  el.innerHTML =
+    '<div class="tendencia-card">'+
+      '<div class="tendencia-title">Cobertura diaria — últimos '+dias.length+' días</div>'+
+      '<div class="chart-wrap">'+barsHtml+'</div>'+
+    '</div>'+
+    '<div style="font-size:12px;color:var(--text2);margin-top:4px;text-align:center;">% = validadas / enviadas del día</div>';
+}
+
+// ==================== RESET ====================
+function resetApp() {
+  appData = null;
+  files.tareas = files.skus = files.venta = files.obj = null;
+  ['tareas','skus','venta','obj'].forEach(function(k) {
+    var z = document.getElementById('z-'+k);
+    z.classList.remove('done','optional-done');
+    var ic = z.querySelector('.uz-icon i');
+    if (ic) ic.className = k==='tareas'?'ti ti-file-text':k==='skus'?'ti ti-table':k==='venta'?'ti ti-shopping-cart':'ti ti-target';
+    document.getElementById('n-'+k).textContent = '';
+    document.getElementById('f-'+k).value = '';
+  });
+  document.getElementById('btn-procesar').disabled = true;
+  document.getElementById('btn-procesar').textContent = 'Procesar y ver resultados';
+  document.getElementById('upload-status').textContent = 'Subí los archivos obligatorios para continuar';
+  document.getElementById('screen-selector').style.display = 'none';
+  document.getElementById('screen-dashboard').style.display = 'none';
+  document.getElementById('screen-supervisor').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+}
+</script>
+</body>
+</html>
