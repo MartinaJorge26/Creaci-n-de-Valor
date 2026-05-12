@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -193,6 +194,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pct-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;}
 /* Admin badge en header */
 .admin-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,215,0,0.2);color:#FFD700;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:10px;font-weight:600;}
+
+.stat-card{
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(12px);
+  border:none;
+  box-shadow:0 10px 24px rgba(0,0,0,0.05);
+  transition:all .2s ease;
+}
+
+.stat-card:hover{
+  transform:translateY(-3px);
+}
+
+.task-card{
+  transition:all .2s ease;
+}
+
+.task-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 18px rgba(0,0,0,0.08);
+}
+
+.tendencia-card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  border:1px solid var(--border);
+  box-shadow:0 8px 20px rgba(0,0,0,0.04);
+}
+
+.prog-fill,
+.priority-prog-fill,
+.ritmo-fill-real{
+  transition:width 1s ease;
+}
 </style>
 </head>
 <body>
@@ -395,6 +432,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="stat-card"><div class="stat-val val-green" id="d-sv-historial">0</div><div class="stat-lbl">Mes acum.</div></div>
       <div class="stat-card"><div class="stat-val val-gray" id="d-sv-objetivo">—</div><div class="stat-lbl">Objetivo</div></div>
     </div>
+    <div class="stats-row" style="margin-bottom:16px;">
+
+      <div class="stat-card">
+        <div class="stat-val val-blue" id="kpi-performance">0%</div>
+        <div class="stat-lbl">Performance mes</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-val val-green" id="kpi-objetivo">0%</div>
+        <div class="stat-lbl">Vs objetivo</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-val val-gray" id="kpi-tendencia">↗</div>
+        <div class="stat-lbl">Tendencia</div>
+      </div>
+
+    </div>
+
     <div class="mes-card">
       <div class="mes-card-title">Acumulado del mes</div>
       <div class="mes-grid">
@@ -411,6 +467,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="no-obj-note" class="no-obj-note" style="display:none;">Sin archivo de objetivos cargado.</div>
     </div>
     <div class="section-hdr" id="lbl-val-hdr" style="display:none;">Tareas validadas hoy</div>
+    <div class="tendencia-card">
+      <div class="mes-card-title">Tendencia últimos 7 días</div>
+      <canvas id="trendChart" height="120"></canvas>
+    </div>
+
     <div id="list-validadas"></div>
     <div class="pendientes-toggle" onclick="togglePendientes()">
       <span id="lbl-pend-hdr">Tareas del día</span>
@@ -479,7 +540,9 @@ function onDniInput(){
   document.getElementById('dni-error').style.display='none';
 }
 function dniLogin(){
-  var dni=String(document.getElementById('dni-input').value).trim();
+  var dni = String(document.getElementById('dni-input').value)
+    .replace(/\./g,'')
+    .trim();
   if(!dni)return;
   if(!appData){document.getElementById('dni-error').textContent='No hay datos cargados. Contactá al administrador.';document.getElementById('dni-error').style.display='block';return;}
   var found=null;
@@ -671,7 +734,57 @@ async function procesar(){
   var ventaPdv={},pdvNombre={};
   if(rawV){rawV.forEach(function(r){var cod=Number(r['Cod. Cliente']),sku=String(r['Código']);if(!ventaPdv[cod])ventaPdv[cod]={};ventaPdv[cod][sku]=true;if(!pdvNombre[cod])pdvNombre[cod]=r['Descripción']||'';});}
   var objMap={},mesaMap={},dniMap={},rolMap={};
-  rawO.forEach(function(r){var p=String(r.PROMOTOR||r.promotor||'').trim(),dni=String(r.DNI||r.dni||'').trim();if(!p)return;objMap[p]=Number(r.OBJETIVO_MES||r.objetivo_mes||r.Objetivo||0)||0;mesaMap[p]=String(r.MESA||r.mesa||r.Mesa||'').trim();rolMap[p]=String(r.ROL||r.rol||'PROMOTOR').trim().toUpperCase();if(dni)dniMap[dni]=p;});
+
+  rawO.forEach(function(r){
+
+    var p = String(
+      r.PROMOTOR ||
+      r.promotor ||
+      r.Nombre ||
+      r.NOMBRE ||
+      r.nombre ||
+      ''
+    ).trim();
+
+    var dni = String(
+      r.DNI ||
+      r.dni ||
+      ''
+    )
+    .replace(/\./g,'')
+    .trim();
+
+    if(!p) return;
+
+    objMap[p] = Number(
+      r.OBJETIVO_MES ||
+      r.objetivo_mes ||
+      r.OBJETIVO ||
+      r.Objetivo ||
+      r.objetivo ||
+      0
+    ) || 0;
+
+    mesaMap[p] = String(
+      r.MESA ||
+      r.Mesa ||
+      r.mesa ||
+      ''
+    ).trim();
+
+    rolMap[p] = String(
+      r.ROL ||
+      r.rol ||
+      'PROMOTOR'
+    )
+    .trim()
+    .toUpperCase();
+
+    if(dni){
+      dniMap[dni] = p;
+    }
+
+  });
   var promotores={},tareasEnvProm={};
   tareasHoy.forEach(function(r){
     var p=r.PROMOTOR||'SIN ASIGNAR';
@@ -682,8 +795,62 @@ async function procesar(){
     if(tv){var skus=skuMap[r._tu];if(skus&&r._pdv){var vendidos=ventaPdv[r._pdv]||{};var match=null;for(var i=0;i<skus.length;i++){if(vendidos[skus[i]]){match=skus[i];break;}}if(match){promotores[p].validadas.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',sku:match,tareaUp:r._tu});return;}}promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',tareaUp:r._tu});}
     else promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:'',tareaUp:r._tu});
   });
-  Object.keys(promotores).forEach(function(p){var counts=tareasEnvProm[p]||{},maxT=null,maxC=0;Object.keys(counts).forEach(function(t){if(counts[t]>maxC){maxC=counts[t];maxT=t;}});promotores[p].tareaPrincipal=maxT;promotores[p].tareaPrincipalEnv=maxC;if(maxT&&tv)promotores[p].tareaPrincipalVal=promotores[p].validadas.filter(function(v){return v.tareaUp===maxT;}).length;});
+  Object.keys(promotores).forEach(function(p){var counts=tareasEnvProm[p]||{},maxT=null,maxC=0;Object.keys(counts).forEach(function(t){if(counts[t]>maxC){maxC=counts[t];maxT=t;}});promotores[p].tareaPrincipal=maxT;promotores[p].tareaPrincipalEnv=maxC;if(maxT&&tv)promotores[p].tareaPrincipalVal=promotores[p].validadas.filter(function(v){return v.tareaUp===maxT;}).length;
+
+    var diasProm = Object.keys(tendenciaPromotor[p] || {})
+      .sort()
+      .slice(-7);
+
+    promotores[p].tendencia = {
+
+      labels: diasProm.map(function(d){
+        return d.slice(6,8)+'/'+d.slice(4,6);
+      }),
+
+      values: diasProm.map(function(d){
+
+        var item = tendenciaPromotor[p][d];
+
+        if(!item || item.enviadas === 0) return 0;
+
+        return Math.round((item.validadas / item.enviadas) * 100);
+
+      })
+
+    };
+
+  });
   Object.keys(dniMap).forEach(function(dni){var p=dniMap[dni];if(!promotores[p]){promotores[p]={enviadas:0,validadas:[],pendientes:[],historial:historial[p]||0,objetivo:objMap[p]||null,mesa:mesaMap[p]||null,rol:rolMap[p]||'PROMOTOR',dni:dni,tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0};}if(!promotores[p].dni)promotores[p].dni=dni;});
+  var tendenciaPromotor = {};
+
+  rawT.forEach(function(r){
+
+    if(!r.desc_ddc_wh || !r.desc_ddc_wh.toUpperCase().includes('PALACIO')) return;
+
+    if(r.PILAR !== 'VALUE_CREATION') return;
+
+    var prom = r.PROMOTOR || 'SIN ASIGNAR';
+    var dia = String(r.dia);
+
+    if(!tendenciaPromotor[prom]){
+      tendenciaPromotor[prom] = {};
+    }
+
+    if(!tendenciaPromotor[prom][dia]){
+      tendenciaPromotor[prom][dia] = {
+        enviadas:0,
+        validadas:0
+      };
+    }
+
+    tendenciaPromotor[prom][dia].enviadas++;
+
+    if(Number(r.TAREAS_VALIDADAS) > 0){
+      tendenciaPromotor[prom][dia].validadas++;
+    }
+
+  });
+
   var tendenciaData={};
   rawT.forEach(function(r){if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;if(r.PILAR!=='VALUE_CREATION')return;var d=String(r.dia);if(!tendenciaData[d])tendenciaData[d]={validadas:0,enviadas:0};tendenciaData[d].enviadas++;if(Number(r.TAREAS_VALIDADAS)>0)tendenciaData[d].validadas++;});
   var tendenciaDias=Object.keys(tendenciaData).sort().slice(-7);
@@ -705,6 +872,34 @@ function showDashboard(nombre,fromAdmin){
   document.getElementById('admin-viewing-badge').style.display=fromAdmin?'inline-flex':'none';
   document.getElementById('dash-back-label').textContent=fromAdmin?'Volver a vistas':'Cerrar sesión';
   var tv=appData.tieneVenta,hist=data.historial||0,obj=data.objetivo,acum=hist+(tv?data.validadas.length:0);
+
+  var perf = data.enviadas > 0
+    ? Math.round((data.validadas.length / data.enviadas) * 100)
+    : 0;
+
+  var vsObj = obj
+    ? Math.round((acum / obj) * 100)
+    : 0;
+
+  var tendenciaIcon = '→';
+
+  if(data.tendencia && data.tendencia.values.length >= 2){
+
+    var last = data.tendencia.values[data.tendencia.values.length - 1];
+    var prev = data.tendencia.values[data.tendencia.values.length - 2];
+
+    if(last > prev) tendenciaIcon = '↗';
+    if(last < prev) tendenciaIcon = '↘';
+
+  }
+
+  var k1 = document.getElementById('kpi-performance');
+  var k2 = document.getElementById('kpi-objetivo');
+  var k3 = document.getElementById('kpi-tendencia');
+
+  if(k1) k1.textContent = perf + '%';
+  if(k2) k2.textContent = vsObj + '%';
+  if(k3) k3.textContent = tendenciaIcon;
   document.getElementById('sin-venta-banner').style.display=tv?'none':'flex';
   if(data.tareaPrincipal){
     document.getElementById('priority-card').style.display='block';
@@ -747,8 +942,64 @@ function showDashboard(nombre,fromAdmin){
   data.pendientes.slice(0,30).forEach(function(t){var c=document.createElement('div');c.className='task-card';if(tv)c.innerHTML='<div class="task-row"><div class="task-ic ic-amber"><i class="ti ti-clock"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div><div class="task-pdv">'+(t.nombre?t.nombre+' · cod. '+t.pdv:'PDV '+t.pdv)+'</div><span class="task-badge tb-amber">Sin compra del SKU</span></div></div>';else c.innerHTML='<div class="task-row"><div class="task-ic ic-blue"><i class="ti ti-calendar-event"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div>'+(t.pdv?'<div class="task-pdv">PDV '+t.pdv+'</div>':'')+'<span class="task-badge" style="background:var(--blue-light);color:var(--blue-text);">Planificada</span></div></div>';lp.appendChild(c);});
   if(data.pendientes.length>30){var m=document.createElement('div');m.style.cssText='text-align:center;padding:10px;font-size:13px;color:var(--text2);';m.textContent='... y '+(data.pendientes.length-30)+' tareas más';lp.appendChild(m);}
   document.getElementById('toggle-lbl').innerHTML='Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';lp.classList.add('hidden-list');
+  renderTrend(nombre);
 }
 function togglePendientes(){var l=document.getElementById('pendientes-list'),t=document.getElementById('toggle-lbl');if(l.classList.contains('hidden-list')){l.classList.remove('hidden-list');t.innerHTML='Ocultar <i class="ti ti-chevron-up" style="vertical-align:-2px;"></i>';}else{l.classList.add('hidden-list');t.innerHTML='Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';}}
+
+function renderTrend(nombre){
+
+  var data = appData.promotores[nombre];
+
+  if(!data || !data.tendencia) return;
+
+  var ctx = document.getElementById('trendChart');
+
+  if(!ctx) return;
+
+  if(window.myTrendChart){
+    window.myTrendChart.destroy();
+  }
+
+  window.myTrendChart = new Chart(ctx, {
+
+    type:'line',
+
+    data:{
+
+      labels:data.tendencia.labels,
+
+      datasets:[{
+        label:'Performance %',
+        data:data.tendencia.values,
+        borderWidth:3,
+        tension:0.4,
+        fill:true
+      }]
+
+    },
+
+    options:{
+
+      responsive:true,
+
+      plugins:{
+        legend:{
+          display:false
+        }
+      },
+
+      scales:{
+        y:{
+          beginAtZero:true,
+          max:100
+        }
+      }
+
+    }
+
+  });
+
+}
 
 // SUPERVISOR
 function showSupervisor(mesa,fromAdmin){
