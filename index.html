@@ -605,6 +605,7 @@ function renderAdminProms(){
   el.innerHTML='';
   proms.forEach(function(entry){
     var n=entry[0],d=entry[1];
+    var nombre=d.nombreDisplay||n;
     var pct=d.enviadas>0?Math.round(d.validadas.length/d.enviadas*1000)/10:null;
     var acum=d.historial+(tv?d.validadas.length:0);
     var totalMesA=d.totalTareasEnviadas||0;
@@ -612,7 +613,7 @@ function renderAdminProms(){
     var objPct=d.objetivo&&acumPctA!==null?Math.round(acumPctA/d.objetivo*100):null;
     var div=document.createElement('div');div.className='prom-card';
     var pillHtml=pct!==null?'<span class="pct-pill '+pctColor(pct)+'">'+pct+'%</span>':'<span class="pct-pill pill-gray">'+d.enviadas+' t</span>';
-    div.innerHTML='<div class="prom-avatar">'+initials(n)+'</div><div style="flex:1;min-width:0;"><div class="prom-name">'+n+'</div><div class="prom-stats">'+(d.mesa||'')+(tv?' · '+d.validadas.length+' val':'')+' · acum: '+acum+(objPct!==null?' · IP: '+objPct+'%':'')+'</div></div>'+pillHtml+'<i class="ti ti-chevron-right prom-arrow"></i>';
+    div.innerHTML='<div class="prom-avatar">'+initials(nombre)+'</div><div style="flex:1;min-width:0;"><div class="prom-name">'+nombre+'</div><div class="prom-stats">'+(d.mesa||'')+(tv?' · '+d.validadas.length+' val':'')+' · acum: '+acum+(objPct!==null?' · Avance: '+objPct+'%':'')+'</div></div>'+pillHtml+'<i class="ti ti-chevron-right prom-arrow"></i>';
     div.onclick=(function(nombre){return function(){isAdmin=true;showDashboard(nombre,true);};})(n);
     el.appendChild(div);
   });
@@ -760,15 +761,16 @@ async function _procesarInterno(btn){
   var objNormMap=buildNormMap(Object.keys(objMap));
   var dniNormMap={}; // normNombre(nombrePromotor) -> dni
   Object.keys(dniMap).forEach(function(dni){dniNormMap[normNombre(dniMap[dni])]=dni;});
-  // Busca datos del objetivo para un promotor, tolerando diferencias de Ñ/tildes
+  // Función para obtener datos del objetivo cruzando por nombre normalizado
   function getObjData(nombrePromotor){
     var norm=normNombre(nombrePromotor);
-    var canon=objNormMap[norm];
+    var canon=objNormMap[norm]; // nombre canónico del archivo de objetivos (tiene Ñ bien escrita)
     return {
       objetivo: canon?(objMap[canon]||null):null,
       mesa: canon?(mesaMap[canon]||null):null,
       rol: canon?(rolMap[canon]||'PROMOTOR'):'PROMOTOR',
-      dni: dniNormMap[norm]||''
+      dni: dniNormMap[norm]||'',
+      nombreCanon: canon||null // nombre limpio para mostrar en pantalla
     };
   }
   // dniMap inverso normalizado para login
@@ -788,11 +790,15 @@ async function _procesarInterno(btn){
     chunk.forEach(function(r){
       if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
       if(r.PILAR!=='VALUE_CREATION')return;
-      if(Number(r.TAREAS_ENVIADAS)!==1)return; // solo filas enviadas
+      if(Number(r.TAREAS_ENVIADAS)!==1)return;
+      var esBonus=String(r.TAREA||'').toUpperCase().includes('BONUS');
+      var validada=Number(r.TAREAS_VALIDADAS)>0;
+      // BONUS: solo cuenta si fue validada (ni enviadas ni historial si no)
+      if(esBonus&&!validada)return;
       var p=r.PROMOTOR||'SIN ASIGNAR';
       totalTareasMes[p]=(totalTareasMes[p]||0)+1;
       if(String(r.dia)===String(hoy))return;
-      if(Number(r.TAREAS_VALIDADAS)>0){historial[p]=(historial[p]||0)+1;}
+      if(validada){historial[p]=(historial[p]||0)+1;}
     });
     setStatus('Historial: '+Math.min(ci+CHUNK,rawT.length)+' / '+rawT.length+' filas...');
     await yieldToUI();
@@ -806,11 +812,30 @@ async function _procesarInterno(btn){
     if(r.PILAR!=='VALUE_CREATION')return;
     if(String(r.dia)!==String(hoy))return;
     if(Number(r.TAREAS_VALIDADAS)!==0)return;
+    var esBonus=String(r.TAREA||'').toUpperCase().includes('BONUS');
+    // BONUS no validadas no se incluyen en tareas de hoy (no suman a enviadas)
+    if(esBonus)return;
     r._pdv=extractPdv(r.cliente_id);
     r._tu=String(r.TAREA||'').toUpperCase();
     tareasHoy.push(r);
   });
   setStatus('Tareas de hoy: '+tareasHoy.length+' registros · cruzando datos...');
+  await yieldToUI();
+
+  // BONUS validadas hoy: suman a validadas y a totalTareasEnviadas del mes
+  // (ya se incluyeron en totalTareasMes en el paso de historial si fueron validadas)
+  // Las capturamos aparte para mostrarlas en la lista de validadas del promotor
+  var bonusValidadasHoy=[];
+  rawT.forEach(function(r){
+    if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
+    if(r.PILAR!=='VALUE_CREATION')return;
+    if(String(r.dia)!==String(hoy))return;
+    if(!String(r.TAREA||'').toUpperCase().includes('BONUS'))return;
+    if(Number(r.TAREAS_VALIDADAS)<=0)return; // solo las validadas
+    r._pdv=extractPdv(r.cliente_id);
+    r._tu=String(r.TAREA||'').toUpperCase();
+    bonusValidadasHoy.push(r);
+  });
   await yieldToUI();
 
   // Construir promotores — en chunks
@@ -824,6 +849,7 @@ async function _procesarInterno(btn){
         promotores[p]={enviadas:0,validadas:[],pendientes:[],
           historial:historial[p]||0,
           objetivo:od.objetivo,mesa:od.mesa,rol:od.rol,dni:od.dni,
+          nombreDisplay:od.nombreCanon||p, // nombre para mostrar (con Ñ correcta si viene del archivo de objetivos)
           totalTareasEnviadas:totalTareasMes[p]||0,
           tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0};
       }
@@ -850,6 +876,26 @@ async function _procesarInterno(btn){
     setStatus('Cruzando: '+Math.min(ci2+CHUNK,tareasHoy.length)+' / '+tareasHoy.length+' tareas...');
     await yieldToUI();
   }
+
+  // Agregar BONUS validadas hoy a la lista de validadas de cada promotor
+  bonusValidadasHoy.forEach(function(r){
+    var p=r.PROMOTOR||'SIN ASIGNAR';
+    if(!promotores[p])return; // promotor sin tareas normales hoy, igual lo sumamos
+    // Buscar SKU si hay venta
+    var skuBonus=null;
+    if(tv){
+      var skus=skuMap[r._tu];
+      if(skus&&r._pdv){
+        var vendidos=ventaPdv[r._pdv]||{};
+        for(var i=0;i<skus.length;i++){if(vendidos[skus[i]]){skuBonus=skus[i];break;}}
+      }
+    }
+    promotores[p].validadas.push({
+      tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',
+      sku:skuBonus||'BONUS',tareaUp:r._tu,esBonus:true
+    });
+  });
+  await yieldToUI();
 
   // Tarea principal y tareas agrupadas por SKU
   Object.keys(promotores).forEach(function(p){
@@ -880,6 +926,7 @@ async function _procesarInterno(btn){
       var od=getObjData(pCanon);
       promotores[pCanon]={enviadas:0,validadas:[],pendientes:[],historial:historial[pCanon]||0,
         objetivo:od.objetivo,mesa:od.mesa,rol:od.rol,dni:dni,
+        nombreDisplay:od.nombreCanon||pCanon,
         totalTareasEnviadas:totalTareasMes[pCanon]||0,
         tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0,tareasAgrupadas:[]};
     } else {
@@ -888,36 +935,65 @@ async function _procesarInterno(btn){
   });
   await yieldToUI();
 
-  // Tendencia global
-  btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Calculando tendencias...';
+  // Tendencia global — cobertura acumulada del mes día a día
+  // Para cada día: acumulado validadas hasta ese día / acumulado enviadas hasta ese día
   var tendenciaData={};
   for(var ci3=0;ci3<rawT.length;ci3+=CHUNK){
     rawT.slice(ci3,ci3+CHUNK).forEach(function(r){
       if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
       if(r.PILAR!=='VALUE_CREATION')return;
+      if(Number(r.TAREAS_ENVIADAS)!==1)return;
+      var esBonus=String(r.TAREA||'').toUpperCase().includes('BONUS');
+      var validada=Number(r.TAREAS_VALIDADAS)>0;
+      if(esBonus&&!validada)return; // BONUS no validadas no cuentan
       var d=String(r.dia);
       if(!tendenciaData[d])tendenciaData[d]={validadas:0,enviadas:0};
       tendenciaData[d].enviadas++;
-      if(Number(r.TAREAS_VALIDADAS)>0)tendenciaData[d].validadas++;
+      if(validada)tendenciaData[d].validadas++;
     });
     await yieldToUI();
   }
+  // Convertir a acumulado del mes día a día
   var tendenciaDias=Object.keys(tendenciaData).sort().slice(-7);
+  var acumVal=0,acumEnv=0;
+  Object.keys(tendenciaData).sort().forEach(function(d){
+    acumVal+=tendenciaData[d].validadas;
+    acumEnv+=tendenciaData[d].enviadas;
+    tendenciaData[d].acumValidadas=acumVal;
+    tendenciaData[d].acumEnviadas=acumEnv;
+    tendenciaData[d].acumPct=acumEnv>0?Math.round(acumVal/acumEnv*100):0;
+  });
 
-  // Tendencia personal
+  // Tendencia personal — cobertura acumulada del mes día a día por promotor
   var tendenciaPersonal={};
   for(var ci4=0;ci4<rawT.length;ci4+=CHUNK){
     rawT.slice(ci4,ci4+CHUNK).forEach(function(r){
       if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
       if(r.PILAR!=='VALUE_CREATION')return;
+      if(Number(r.TAREAS_ENVIADAS)!==1)return;
+      var esBonus=String(r.TAREA||'').toUpperCase().includes('BONUS');
+      var validada=Number(r.TAREAS_VALIDADAS)>0;
+      if(esBonus&&!validada)return; // BONUS no validadas no cuentan
       var p=r.PROMOTOR||'SIN ASIGNAR',d=String(r.dia);
       if(!tendenciaPersonal[p])tendenciaPersonal[p]={};
       if(!tendenciaPersonal[p][d])tendenciaPersonal[p][d]={validadas:0,enviadas:0};
       tendenciaPersonal[p][d].enviadas++;
-      if(Number(r.TAREAS_VALIDADAS)>0)tendenciaPersonal[p][d].validadas++;
+      if(validada)tendenciaPersonal[p][d].validadas++;
     });
     await yieldToUI();
   }
+  // Calcular acumulado por promotor
+  Object.keys(tendenciaPersonal).forEach(function(p){
+    var diasOrden=Object.keys(tendenciaPersonal[p]).sort();
+    var av=0,ae=0;
+    diasOrden.forEach(function(d){
+      av+=tendenciaPersonal[p][d].validadas;
+      ae+=tendenciaPersonal[p][d].enviadas;
+      tendenciaPersonal[p][d].acumValidadas=av;
+      tendenciaPersonal[p][d].acumEnviadas=ae;
+      tendenciaPersonal[p][d].acumPct=ae>0?Math.round(av/ae*100):0;
+    });
+  });
 
   // Guardar
   btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Guardando datos...';
@@ -951,22 +1027,25 @@ function setGauge(pct){
   arc.style.strokeDashoffset=offset;
 }
 
-// MINI CHART
+// MINI CHART — muestra cobertura acumulada del mes hasta cada día
 function renderMiniChart(containerId,dias,dataByDia,hoy){
   var el=document.getElementById(containerId);if(!el)return;
   if(!dias||!dias.length){el.parentElement.style.display='none';return;}
   el.parentElement.style.display='block';
   el.innerHTML='';
+  // Usar acumPct si existe, sino calcular del día
+  var maxPct=Math.max.apply(null,dias.map(function(d){return (dataByDia[d]||{}).acumPct||(dataByDia[d]&&dataByDia[d].enviadas>0?Math.round(dataByDia[d].validadas/dataByDia[d].enviadas*100):0)||1;}));
   dias.forEach(function(d){
-    var dat=dataByDia[d]||{validadas:0,enviadas:0};
-    var pct=dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0;
+    var dat=dataByDia[d]||{};
+    var pct=dat.acumPct!==undefined?dat.acumPct:(dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0);
     var color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
     var isHoy=String(d)===String(hoy);
     var lbl=String(d).slice(6,8)+'/'+String(d).slice(4,6);
+    var barH=maxPct>0?Math.max(Math.round(pct/maxPct*100),4):4;
     var bar=document.createElement('div');bar.className='mini-bar';
-    bar.innerHTML='<div class="mini-bar-val">'+pct+'%</div>'+
-      '<div class="mini-bar-fill" style="height:'+Math.max(pct,4)+'%;background:'+color+';'+(isHoy?'outline:2px solid var(--blue);':'')+'"></div>'+
-      '<div class="mini-bar-lbl" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+lbl+'</div>';
+    bar.innerHTML='<div class="mini-bar-val">'+pct+'%</div>'
+      +'<div class="mini-bar-fill" style="height:'+barH+'%;background:'+color+';'+(isHoy?'outline:2px solid var(--blue);':'')+'"></div>'
+      +'<div class="mini-bar-lbl" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+lbl+'</div>';
     el.appendChild(bar);
   });
 }
@@ -975,7 +1054,7 @@ function renderMiniChart(containerId,dias,dataByDia,hoy){
 function showDashboard(nombre,fromAdmin){
   var data=appData.promotores[nombre];
   showScreen('screen-dashboard');
-  document.getElementById('d-nombre').textContent=nombre;
+  document.getElementById('d-nombre').textContent=data.nombreDisplay||nombre;
   document.getElementById('d-avatar').textContent=initials(nombre);
   document.getElementById('d-fecha').textContent=fmtFecha(appData.hoy);
   document.getElementById('d-mesa').textContent=data.mesa||'';
@@ -1121,17 +1200,16 @@ function renderRankingMesa(miNombre,mesa,tv,miAcumPct){
     return e[1].rol!=='SUPERVISOR'&&e[1].mesa===mesa;
   });
   if(proms.length<2){document.getElementById('ranking-mesa-card').style.display='none';return;}
-  // Calcular cobertura acumulada de cada uno y ordenar
   proms=proms.map(function(e){
     var d=e[1],tot=d.totalTareasEnviadas||0;
     var val=(d.historial||0)+(tv?d.validadas.length:0);
     var pct=tot>0?Math.round(val/tot*100):0;
-    return {nombre:e[0],pct:pct,obj:d.objetivo};
+    return {key:e[0],nombre:d.nombreDisplay||e[0],pct:pct,obj:d.objetivo};
   }).sort(function(a,b){return b.pct-a.pct;});
   document.getElementById('ranking-mesa-card').style.display='block';
   var el=document.getElementById('ranking-mesa-list');el.innerHTML='';
   proms.forEach(function(p,i){
-    var esSelf=p.nombre===miNombre;
+    var esSelf=p.key===miNombre;
     var rc=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
     var avStr=p.obj?Math.round(p.pct/p.obj*100)+'% avance':'';
     el.innerHTML+='<div class="ranking-card" style="'+(esSelf?'background:var(--blue-light);border-color:var(--blue-mid);':'')+'cursor:default;">'
@@ -1183,7 +1261,7 @@ function renderSupMesas(){
   Object.keys(mesas).sort().forEach(function(mesa){
     var mp=mesas[mesa],mEnv=mp.reduce(function(s,e){return s+e[1].enviadas;},0),mVal=mp.reduce(function(s,e){return s+e[1].validadas.length;},0),mPct=mEnv>0?Math.round(mVal/mEnv*100):0,color=mesaColor(mPct);
     var ph=mp.sort(function(a,b){var pa=a[1].enviadas>0?a[1].validadas.length/a[1].enviadas:0,pb=b[1].enviadas>0?b[1].validadas.length/b[1].enviadas:0;return pb-pa;}).map(function(e){
-      var n=e[0],d=e[1];
+      var n=e[0],d=e[1],nomDisp=d.nombreDisplay||n;
       var pp=d.enviadas>0?Math.round(d.validadas.length/d.enviadas*100):0;
       var acumI=(d.historial||0)+(tv?d.validadas.length:0);
       var totalMesI=d.totalTareasEnviadas||0;
@@ -1192,7 +1270,7 @@ function renderSupMesas(){
       var objPct2=avanceI; // avance % vs objetivo
       var al=tv&&d.enviadas>0&&d.validadas.length===0?'<i class="ti ti-alert-circle" style="color:var(--red);font-size:14px;"></i>':'';
       var clickAttr=isAdmin?'onclick="showDashboard(\''+n.replace(/'/g,"\\'")+"',true)\"":'';
-      return '<div class="mesa-prom-row" '+clickAttr+'><div class="mesa-prom-avatar">'+initials(n)+'</div><div class="mesa-prom-name">'+n+'</div>'+al
+      return '<div class="mesa-prom-row" '+clickAttr+'><div class="mesa-prom-avatar">'+initials(nomDisp)+'</div><div class="mesa-prom-name">'+nomDisp+'</div>'+al
         +'<span class="mesa-prom-pill '+(tv?pctColor(pp):'pill-gray')+'">'+(tv?pp+'% hoy':d.enviadas+' t')+'</span>'
         +(acumPctI!==null?'<span style="font-size:10px;color:var(--text2);margin-left:3px;">Mes:'+acumPctI+'%</span>':'')
         +(avanceI!==null?'<span style="font-size:10px;color:'+(avanceI>=100?'var(--green)':avanceI>=70?'var(--amber)':'var(--red)')+';margin-left:2px;">Av:'+avanceI+'%</span>':'')
@@ -1209,21 +1287,23 @@ function renderSupRanking(){
     var d=e[1],tot=d.totalTareasEnviadas||0;
     var val=(d.historial||0)+(tv?d.validadas.length:0);
     var pct=tot>0?Math.round(val/tot*100):0;
-    return {nombre:e[0],data:d,acumPct:pct,val:val,tot:tot};
+    return {key:e[0],nombre:d.nombreDisplay||e[0],data:d,acumPct:pct,val:val,tot:tot};
   }).sort(function(a,b){return b.acumPct-a.acumPct;});
   var html='';
   proms.forEach(function(p,i){
     var rank=i+1,rc=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
     var avance=p.data.objetivo?Math.round(p.acumPct/p.data.objetivo*100):null;
     var al=tv&&p.data.enviadas>0&&p.data.validadas.length===0;
-    var clickAttr=isAdmin?'onclick="showDashboard(\''+p.nombre.replace(/'/g,"\\'")+"',true)\"":'';
+    var clickAttr=isAdmin?'onclick="showDashboard(\''+p.key.replace(/'/g,"\\'")+"',true)\"":'';
     html+='<div class="ranking-card" '+clickAttr+'>'
       +'<div class="rank-num '+rc+'">'+rank+'</div>'
       +'<div class="rank-info">'
       +'<div class="rank-name">'+p.nombre+'</div>'
-      +'<div class="rank-detail">'+p.acumPct+'% cob. acum. · '+p.val+'/'+p.tot+' tareas'
-      +(p.data.objetivo?' · Obj: '+p.data.objetivo+'%':'')
-      +(avance!==null?' · Avance: '+avance+'%':'')+'</div></div>'
+      +'<div class="rank-detail">'
+      +p.val+' validadas / '+p.tot+' enviadas en el mes'
+      +(p.data.objetivo?' · Objetivo: '+p.data.objetivo+'%':'')
+      +(avance!==null?' · Avance: '+avance+'%':'')
+      +'</div></div>'
       +(al?'<div class="rank-alert"><i class="ti ti-alert-triangle"></i></div>':'<span class="pct-pill '+pctColor(p.acumPct)+'">'+p.acumPct+'%</span>')
       +'</div>';
   });
@@ -1232,14 +1312,15 @@ function renderSupRanking(){
 
 function renderSupTendencia(){
   var el=document.getElementById('sup-panel-tendencia'),dias=appData.tendenciaDias,td=appData.tendenciaData;
-  if(!dias.length){el.innerHTML='<div class="empty-state">Sin datos históricos</div>';return;}
+  if(!dias||!dias.length){el.innerHTML='<div class="empty-state">Sin datos históricos</div>';return;}
   var bars=dias.map(function(d){
-    var dat=td[d]||{validadas:0,enviadas:0},pct=dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0;
+    var dat=td[d]||{};
+    var pct=dat.acumPct!==undefined?dat.acumPct:(dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0);
     var color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
     var isHoy=String(d)===String(appData.hoy),lbl=String(d).slice(6,8)+'/'+String(d).slice(4,6);
     return '<div class="mini-bar"><div class="mini-bar-val">'+pct+'%</div><div class="mini-bar-fill" style="height:'+Math.max(pct,4)+'%;background:'+color+';'+(isHoy?'outline:2px solid var(--blue);':'')+'"></div><div class="mini-bar-lbl" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+lbl+'</div></div>';
   }).join('');
-  el.innerHTML='<div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px;"><div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Cobertura del equipo — últimos '+dias.length+' días</div><div class="mini-chart" style="height:80px;">'+bars+'</div></div><div style="font-size:11px;color:var(--text2);text-align:center;">% validadas / enviadas del día</div>';
+  el.innerHTML='<div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px;"><div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Cobertura acumulada del mes — últimos '+dias.length+' días</div><div class="mini-chart" style="height:80px;">'+bars+'</div></div><div style="font-size:11px;color:var(--text2);text-align:center;">% validadas / enviadas acumulado en el mes</div>';
 }
 
 // INIT
