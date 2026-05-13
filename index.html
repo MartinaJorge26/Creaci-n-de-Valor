@@ -9,6 +9,7 @@
 <title>Creación de Valor · DEL PALACIO</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -21,8 +22,6 @@
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 .screen{display:none;min-height:100vh;}
-
-/* LOGIN */
 .login-header{background:var(--blue);padding:60px 24px 40px;text-align:center;}
 .login-logo{width:64px;height:64px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;color:#fff;}
 .login-title{color:#fff;font-size:24px;font-weight:700;}
@@ -37,8 +36,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-main:disabled{background:var(--border);color:var(--gray);cursor:not-allowed;}
 .error-msg{background:var(--red-light);border:1px solid var(--red);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--red-text);margin-top:12px;display:none;}
 .link-btn{font-size:12px;color:var(--blue-mid);cursor:pointer;text-decoration:underline;}
-
-/* ADMIN */
 .admin-header{background:var(--blue);padding:48px 24px 28px;text-align:center;}
 .admin-title{color:#fff;font-size:20px;font-weight:600;}
 .admin-sub{color:#B5D4F4;font-size:13px;margin-top:4px;}
@@ -61,8 +58,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-secondary{width:100%;padding:12px;background:none;border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text2);cursor:pointer;font-family:inherit;margin-top:6px;}
 .upload-status{text-align:center;font-size:12px;color:var(--text2);margin-top:8px;}
 .info-box{background:var(--blue-light);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--blue-text);line-height:1.7;margin-top:10px;}
-
-/* ADMIN VISTA */
 .admin-vista-header{background:var(--blue);padding:44px 20px 20px;}
 .admin-vista-back{color:#B5D4F4;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:12px;}
 .search-wrap{position:relative;margin-bottom:12px;}
@@ -71,8 +66,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .role-tabs{display:flex;gap:8px;margin-bottom:16px;}
 .role-tab{flex:1;padding:10px;text-align:center;border:2px solid var(--border);border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);background:#fff;transition:all 0.15s;}
 .role-tab.active{border-color:var(--blue-mid);background:var(--blue-light);color:var(--blue-text);}
-
-/* DASHBOARD */
 .dash-header{background:var(--blue);padding:44px 20px 20px;}
 .dash-back{color:#B5D4F4;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:12px;}
 .dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -81,8 +74,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dash-avatar{width:40px;height:40px;border-radius:50%;background:#378ADD;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#042C53;flex-shrink:0;}
 .date-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);color:#B5D4F4;font-size:12px;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
 .admin-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,215,0,0.2);color:#FFD700;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:8px;font-weight:600;}
-
-/* KPI HEADER */
 .kpi-header{background:rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;}
 .kpi-main-num{color:#fff;font-size:38px;font-weight:700;line-height:1;}
 .kpi-main-lbl{color:#B5D4F4;font-size:12px;margin-top:2px;}
@@ -90,8 +81,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kpi-mini{background:rgba(255,255,255,0.08);border-radius:10px;padding:10px 8px;text-align:center;}
 .kpi-mini-val{color:#fff;font-size:18px;font-weight:700;line-height:1;}
 .kpi-mini-lbl{color:#B5D4F4;font-size:10px;margin-top:3px;}
-
-/* DASHBOARD BODY */
 .dash-body{padding:14px;padding-bottom:80px;}
 .stats-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
 .stats-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
@@ -102,8 +91,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .val-red{color:var(--red);}
 .val-gray{color:var(--text);}
 .val-blue{color:var(--blue-mid);}
-
-/* GAUGE */
 .gauge-card{background:#fff;border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:12px;}
 .gauge-title{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;}
 .gauge-wrap{display:flex;align-items:center;gap:16px;}
@@ -112,9 +99,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .gauge-ritmo{font-size:12px;font-weight:600;margin-top:8px;padding:6px 10px;border-radius:8px;display:inline-block;}
 .ritmo-ok{background:var(--green-light);color:var(--green-text);}
 .ritmo-warn{background:var(--amber-light);color:var(--amber-text);}
-.ritmo-bad{background:var(--red-light);color:var(--red-text);}
-
-/* TENDENCIA */
 .tendencia-card{background:#fff;border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:12px;}
 .tendencia-title{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;}
 .mini-chart{height:70px;display:flex;align-items:flex-end;gap:3px;}
@@ -122,8 +106,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mini-bar-fill{width:100%;border-radius:3px 3px 0 0;min-height:3px;}
 .mini-bar-lbl{font-size:8px;color:var(--text2);}
 .mini-bar-val{font-size:8px;font-weight:600;color:var(--text2);}
-
-/* TAREA PRINCIPAL */
 .priority-card{background:linear-gradient(135deg,#1F3864 0%,#2E75B6 100%);border-radius:16px;padding:16px;margin-bottom:12px;}
 .priority-label{font-size:10px;font-weight:700;color:#B5D4F4;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
 .priority-tarea{color:#fff;font-size:15px;font-weight:600;margin-bottom:4px;}
@@ -131,8 +113,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .priority-prog-wrap{background:rgba(255,255,255,0.15);border-radius:6px;height:8px;overflow:hidden;}
 .priority-prog-fill{height:100%;border-radius:6px;background:#5DCAA5;transition:width 0.8s ease;}
 .priority-pct{color:#5DCAA5;font-size:12px;font-weight:700;margin-top:5px;}
-
-/* TASKS */
 .section-hdr{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;margin-top:4px;}
 .task-card{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--border);}
 .task-row{display:flex;align-items:flex-start;gap:10px;}
@@ -153,8 +133,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sin-venta-banner{background:var(--amber-light);border:1px solid var(--amber);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
 .sin-venta-banner i{font-size:20px;color:var(--amber);flex-shrink:0;}
 .sin-venta-banner p{font-size:13px;color:var(--amber-text);line-height:1.4;}
-
-/* SUPERVISOR */
 .sup-header{background:var(--blue);padding:44px 20px 20px;}
 .sup-back{color:#B5D4F4;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:12px;}
 .sup-title{color:#fff;font-size:20px;font-weight:600;}
@@ -254,21 +232,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="admin-card">
       <div class="admin-card-title"><i class="ti ti-calendar-event"></i>Archivos del día (subir cada día)</div>
       <div class="upload-zone" id="z-tareas" onclick="document.getElementById('f-tareas').click()">
-        <input type="file" id="f-tareas" accept=".xlsx,.xls" style="display:none" onchange="onFile(this,'tareas')">
-        <div class="uz-icon"><i class="ti ti-file-spreadsheet"></i></div>
-        <div class="uz-label">Tareas del día <span style="color:#E24B4A;">*</span> <span class="optional-tag">XLSX</span></div>
+        <input type="file" id="f-tareas" accept=".csv,.xlsx,.xls" style="display:none" onchange="onFile(this,'tareas')">
+        <div class="uz-icon"><i class="ti ti-file-text"></i></div>
+        <div class="uz-label">Tareas del día <span style="color:#E24B4A;">*</span> <span class="optional-tag">CSV o XLSX</span></div>
         <div class="uz-name" id="n-tareas"></div>
       </div>
       <div class="upload-zone" id="z-venta" onclick="document.getElementById('f-venta').click()">
         <input type="file" id="f-venta" accept=".xlsx,.xls" style="display:none" onchange="onFile(this,'venta')">
         <div class="uz-icon"><i class="ti ti-shopping-cart"></i></div>
-        <div class="uz-label">Venta del día <span class="optional-tag">opcional</span></div>
+        <div class="uz-label">Venta del día <span class="optional-tag">opcional · XLSX</span></div>
         <div class="uz-name" id="n-venta"></div>
       </div>
       <button class="btn-main" id="btn-procesar" disabled onclick="procesar()">
         <i class="ti ti-player-play" style="vertical-align:-2px;margin-right:6px;"></i>Procesar y publicar
       </button>
-      <div class="upload-status" id="upload-status">Subí el XLSX de tareas para continuar</div>
+      <div class="upload-status" id="upload-status">Subí el archivo de tareas para continuar</div>
     </div>
 
     <div class="admin-card">
@@ -289,11 +267,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <i class="ti ti-trash" style="vertical-align:-2px;margin-right:5px;"></i>Limpiar archivos base
       </button>
       <div class="info-box">
-        <strong>Cruce de datos:</strong><br>
-        Tareas → últimos 5 dígitos de <strong>cliente_id</strong><br>
-        Venta → columna <strong>Cod. Cliente</strong><br>
-        Coinciden → tarea validada ✓<br><br>
-        <strong>Archivo de objetivos:</strong> DNI · Nombre · OBJETIVO · Mesa · ROL
+        <strong>Cruce PDV:</strong> últimos 5 dígitos de <strong>cliente_id</strong> (tareas) = <strong>Cod. Cliente</strong> (venta)<br>
+        <strong>Tareas:</strong> CSV con coma o XLSX — ambos funcionan<br>
+        <strong>Objetivos:</strong> columnas DNI · Nombre · OBJETIVO · Mesa · ROL
       </div>
     </div>
 
@@ -373,13 +349,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
   </div>
-
   <div class="dash-body">
     <div id="sin-venta-banner" class="sin-venta-banner" style="display:none;">
       <i class="ti ti-clock"></i>
       <p>Venta no cargada. Mostrando planificación y acumulado histórico.</p>
     </div>
-
     <div id="priority-card" class="priority-card" style="display:none;">
       <div class="priority-label"><i class="ti ti-star" style="font-size:12px;"></i>Tarea más importante del día</div>
       <div class="priority-tarea" id="priority-nombre"></div>
@@ -387,13 +361,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="priority-prog-wrap"><div class="priority-prog-fill" id="priority-fill" style="width:0%"></div></div>
       <div class="priority-pct" id="priority-pct"></div>
     </div>
-
     <div class="gauge-card" id="gauge-card" style="display:none;">
       <div class="gauge-title">Avance vs objetivo del mes</div>
       <div class="gauge-wrap">
         <svg width="100" height="60" viewBox="0 0 100 60">
           <path d="M10,55 A45,45 0 0,1 90,55" fill="none" stroke="#E8E6DF" stroke-width="10" stroke-linecap="round"/>
-          <path id="gauge-arc" d="M10,55 A45,45 0 0,1 90,55" fill="none" stroke="#E8E6DF" stroke-width="10" stroke-linecap="round" stroke-dasharray="141.4" stroke-dashoffset="141.4"/>
+          <path id="gauge-arc" d="M10,55 A45,45 0 0,1 90,55" fill="none" stroke="#1D9E75" stroke-width="10" stroke-linecap="round" stroke-dasharray="141.4" stroke-dashoffset="141.4"/>
         </svg>
         <div>
           <div class="gauge-pct-big" id="gauge-pct-text">—</div>
@@ -402,12 +375,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         </div>
       </div>
     </div>
-
     <div class="tendencia-card" id="tendencia-personal-card" style="display:none;">
       <div class="tendencia-title">Mi tendencia — últimos días</div>
       <div class="mini-chart" id="mini-chart-personal"></div>
     </div>
-
     <div class="stats-3" id="stats-dia" style="display:none;">
       <div class="stat-card"><div class="stat-val val-green" id="d-s-val">0</div><div class="stat-lbl">Validadas hoy</div></div>
       <div class="stat-card"><div class="stat-val val-red" id="d-s-pend">0</div><div class="stat-lbl">Pendientes</div></div>
@@ -417,7 +388,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="stat-card"><div class="stat-val val-blue" id="d-sv-enviadas">0</div><div class="stat-lbl">Tareas hoy</div></div>
       <div class="stat-card"><div class="stat-val val-green" id="d-sv-historial">0</div><div class="stat-lbl">Acum. mes</div></div>
     </div>
-
     <div class="section-hdr" id="lbl-val-hdr" style="display:none;">Tareas validadas hoy</div>
     <div id="list-validadas"></div>
     <div class="pendientes-toggle" onclick="togglePendientes()">
@@ -454,11 +424,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 var ADMIN_PASS='Chascomus588';
 var LS_SKUS='cdv_skus',LS_OBJ='cdv_obj',LS_APP='cdv_app';
 var files={tareas:null,skus:null,venta:null,obj:null};
-var appData=null;
-var currentSupMesa=null;
-var isAdmin=false;
+var appData=null,currentSupMesa=null,isAdmin=false;
 
-// UTILS
+// Lee XLSX o CSV automáticamente según extensión
+function readTareas(f){
+  var name=f.name.toLowerCase();
+  if(name.endsWith('.csv')){
+    return new Promise(function(res){
+      Papa.parse(f,{
+        header:true,
+        delimiter:',',
+        skipEmptyLines:true,
+        complete:function(r){res(r.data);}
+      });
+    });
+  } else {
+    return readXlsx(f);
+  }
+}
 function readXlsx(f){
   return new Promise(function(res){
     var r=new FileReader();
@@ -475,45 +458,28 @@ function fmtFecha(d){var s=String(d);return s.slice(6,8)+'/'+s.slice(4,6)+'/'+s.
 function pctColor(p){return p>=80?'pill-green':p>=50?'pill-amber':'pill-red';}
 function mesaColor(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
 function calcDia(hoy){return parseInt(String(hoy).slice(6,8))||1;}
-
-// Extraer código PDV: últimos 5 dígitos de cliente_id (como número, sin ceros a la izquierda)
-function extractPdv(clienteId){
-  var s=String(clienteId||'');
-  // Tomar los últimos 5 caracteres y convertir a número
-  var last5=s.slice(-5);
-  return parseInt(last5,10)||0;
-}
+// Últimos 5 dígitos de cliente_id como número (sin ceros a la izquierda)
+function extractPdv(clienteId){return parseInt(String(clienteId||'').slice(-5),10)||0;}
 
 function showScreen(id){
-  ['screen-login','screen-admin-login','screen-admin','screen-admin-vista','screen-dashboard','screen-supervisor'].forEach(function(s){
-    var el=document.getElementById(s);if(el)el.style.display='none';
-  });
+  ['screen-login','screen-admin-login','screen-admin','screen-admin-vista','screen-dashboard','screen-supervisor'].forEach(function(s){var el=document.getElementById(s);if(el)el.style.display='none';});
   var el=document.getElementById(id);if(!el)return;
   if(id==='screen-login'||id==='screen-admin-login'||id==='screen-admin'){el.style.display='flex';el.style.flexDirection='column';}
   else el.style.display='block';
 }
 
-// LOGIN DNI
-function onDniInput(){
-  var v=document.getElementById('dni-input').value;
-  document.getElementById('btn-entrar').disabled=v.length<7;
-  document.getElementById('dni-error').style.display='none';
-}
+function onDniInput(){document.getElementById('btn-entrar').disabled=document.getElementById('dni-input').value.length<7;document.getElementById('dni-error').style.display='none';}
 function dniLogin(){
   var dni=String(document.getElementById('dni-input').value).trim();
-  if(!dni)return;
   if(!appData){document.getElementById('dni-error').textContent='No hay datos cargados. Contactá al administrador.';document.getElementById('dni-error').style.display='block';return;}
   var found=null;
   Object.keys(appData.promotores).forEach(function(n){if(String(appData.promotores[n].dni)===dni)found=n;});
   if(!found){document.getElementById('dni-error').textContent='DNI no encontrado. Verificá el número o contactá a tu referente.';document.getElementById('dni-error').style.display='block';return;}
   isAdmin=false;
   var data=appData.promotores[found];
-  if(data.rol==='SUPERVISOR')showSupervisor(data.mesa,false);
-  else showDashboard(found,false);
+  if(data.rol==='SUPERVISOR')showSupervisor(data.mesa,false);else showDashboard(found,false);
 }
 function logout(){isAdmin=false;document.getElementById('dni-input').value='';document.getElementById('btn-entrar').disabled=true;document.getElementById('dni-error').style.display='none';showScreen('screen-login');}
-
-// ADMIN LOGIN
 function showAdminLogin(){showScreen('screen-admin-login');document.getElementById('admin-pass-input').value='';document.getElementById('admin-error').style.display='none';}
 function adminLogin(){
   if(document.getElementById('admin-pass-input').value===ADMIN_PASS){
@@ -523,13 +489,10 @@ function adminLogin(){
     if(appData){document.getElementById('admin-fecha-sub').textContent='Último proceso: '+fmtFecha(appData.hoy);document.getElementById('admin-ver-card').style.display='block';}
   } else document.getElementById('admin-error').style.display='block';
 }
-
-// ADMIN VISTA
 function showAdminVista(){
   showScreen('screen-admin-vista');
   var proms=Object.values(appData.promotores).filter(function(d){return d.rol!=='SUPERVISOR';});
-  var tVal=proms.reduce(function(s,d){return s+d.validadas.length;},0);
-  var tEnv=proms.reduce(function(s,d){return s+d.enviadas;},0);
+  var tVal=proms.reduce(function(s,d){return s+d.validadas.length;},0),tEnv=proms.reduce(function(s,d){return s+d.enviadas;},0);
   var pct=tEnv>0?Math.round(tVal/tEnv*1000)/10:0;
   document.getElementById('admin-vista-sub').textContent=appData.tieneVenta?(tVal+' validadas / '+tEnv+' enviadas · '+pct+'%'):('Total: '+proms.length+' promotores activos');
   setAdminVistaTab('promotores');
@@ -544,47 +507,40 @@ function setAdminVistaTab(tab){
   if(tab==='promotores')renderAdminProms();else renderAdminMesas();
 }
 function renderAdminProms(){
-  var q=(document.getElementById('av-search').value||'').toUpperCase();
-  var el=document.getElementById('av-proms-list'),tv=appData.tieneVenta;
+  var q=(document.getElementById('av-search').value||'').toUpperCase(),el=document.getElementById('av-proms-list'),tv=appData.tieneVenta;
   var proms=Object.entries(appData.promotores).filter(function(e){return e[1].rol!=='SUPERVISOR'&&e[0].toUpperCase().includes(q);}).sort(function(a,b){var pa=a[1].enviadas>0?a[1].validadas.length/a[1].enviadas:0,pb=b[1].enviadas>0?b[1].validadas.length/b[1].enviadas:0;return pb-pa;});
   el.innerHTML='';
   proms.forEach(function(entry){
-    var n=entry[0],d=entry[1];
-    var pct=d.enviadas>0?Math.round(d.validadas.length/d.enviadas*1000)/10:null;
-    var acum=d.historial+(tv?d.validadas.length:0);
-    var objPct=d.objetivo>0?Math.round(acum/d.objetivo*100):null;
+    var n=entry[0],d=entry[1],pct=d.enviadas>0?Math.round(d.validadas.length/d.enviadas*1000)/10:null;
+    var acum=d.historial+(tv?d.validadas.length:0),objPct=d.objetivo>0?Math.round(acum/d.objetivo*100):null;
     var div=document.createElement('div');div.className='prom-card';
-    var pillHtml=pct!==null?'<span class="pct-pill '+pctColor(pct)+'">'+pct+'%</span>':'<span class="pct-pill pill-gray">'+d.enviadas+' t</span>';
-    div.innerHTML='<div class="prom-avatar">'+initials(n)+'</div><div style="flex:1;min-width:0;"><div class="prom-name">'+n+'</div><div class="prom-stats">'+(d.mesa||'')+(tv?' · '+d.validadas.length+' val':'')+' · acum: '+acum+(objPct!==null?' · IP: '+objPct+'%':'')+'</div></div>'+pillHtml+'<i class="ti ti-chevron-right prom-arrow"></i>';
+    var pill=pct!==null?'<span class="pct-pill '+pctColor(pct)+'">'+pct+'%</span>':'<span class="pct-pill pill-gray">'+d.enviadas+' t</span>';
+    div.innerHTML='<div class="prom-avatar">'+initials(n)+'</div><div style="flex:1;min-width:0;"><div class="prom-name">'+n+'</div><div class="prom-stats">'+(d.mesa||'')+(tv?' · '+d.validadas.length+' val':'')+' · acum: '+acum+(objPct!==null?' · IP: '+objPct+'%':'')+'</div></div>'+pill+'<i class="ti ti-chevron-right prom-arrow"></i>';
     div.onclick=(function(nombre){return function(){isAdmin=true;showDashboard(nombre,true);};})(n);
     el.appendChild(div);
   });
   if(!proms.length)el.innerHTML='<div class="empty-state">No se encontraron promotores</div>';
 }
 function renderAdminMesas(){
-  var el=document.getElementById('av-mesas-list'),tv=appData.tieneVenta;
-  var mesas={};
+  var el=document.getElementById('av-mesas-list'),tv=appData.tieneVenta,mesas={};
   Object.entries(appData.promotores).forEach(function(e){if(e[1].rol==='SUPERVISOR')return;var m=e[1].mesa||'Sin mesa';if(!mesas[m])mesas[m]=[];mesas[m].push(e);});
   el.innerHTML='';
-  var allProms=Object.values(appData.promotores).filter(function(d){return d.rol!=='SUPERVISOR';});
-  var tEnv=allProms.reduce(function(s,d){return s+d.enviadas;},0),tVal=allProms.reduce(function(s,d){return s+d.validadas.length;},0);
-  var tPct=tEnv>0?Math.round(tVal/tEnv*1000)/10:0;
+  var allP=Object.values(appData.promotores).filter(function(d){return d.rol!=='SUPERVISOR';});
+  var tE=allP.reduce(function(s,d){return s+d.enviadas;},0),tV=allP.reduce(function(s,d){return s+d.validadas.length;},0);
+  var tP=tE>0?Math.round(tV/tE*1000)/10:0;
   var all=document.createElement('div');all.className='prom-card';
-  all.innerHTML='<div class="prom-avatar sup"><i class="ti ti-users" style="font-size:16px;"></i></div><div style="flex:1;"><div class="prom-name">Equipo completo</div><div class="prom-stats">Todos los promotores</div></div>'+(tv?'<span class="pct-pill '+pctColor(tPct)+'">'+tPct+'%</span>':'')+'<i class="ti ti-chevron-right prom-arrow"></i>';
-  all.onclick=function(){isAdmin=true;showSupervisor(null,true);};
-  el.appendChild(all);
+  all.innerHTML='<div class="prom-avatar sup"><i class="ti ti-users" style="font-size:16px;"></i></div><div style="flex:1;"><div class="prom-name">Equipo completo</div><div class="prom-stats">Todos los promotores</div></div>'+(tv?'<span class="pct-pill '+pctColor(tP)+'">'+tP+'%</span>':'')+'<i class="ti ti-chevron-right prom-arrow"></i>';
+  all.onclick=function(){isAdmin=true;showSupervisor(null,true);};el.appendChild(all);
   Object.keys(mesas).sort().forEach(function(mesa){
-    var mp=mesas[mesa],mEnv=mp.reduce(function(s,e){return s+e[1].enviadas;},0),mVal=mp.reduce(function(s,e){return s+e[1].validadas.length;},0),mPct=mEnv>0?Math.round(mVal/mEnv*1000)/10:0;
+    var mp=mesas[mesa],mE=mp.reduce(function(s,e){return s+e[1].enviadas;},0),mV=mp.reduce(function(s,e){return s+e[1].validadas.length;},0),mP=mE>0?Math.round(mV/mE*1000)/10:0;
     var div=document.createElement('div');div.className='prom-card';
-    div.innerHTML='<div class="prom-avatar sup">'+initials(mesa)+'</div><div style="flex:1;min-width:0;"><div class="prom-name">'+mesa+'</div><div class="prom-stats">'+mp.length+' promotores · '+mVal+' val / '+mEnv+' env</div></div>'+(tv?'<span class="pct-pill '+pctColor(mPct)+'">'+mPct+'%</span>':'')+'<i class="ti ti-chevron-right prom-arrow"></i>';
-    div.onclick=(function(m){return function(){isAdmin=true;showSupervisor(m,true);};})(mesa);
-    el.appendChild(div);
+    div.innerHTML='<div class="prom-avatar sup">'+initials(mesa)+'</div><div style="flex:1;min-width:0;"><div class="prom-name">'+mesa+'</div><div class="prom-stats">'+mp.length+' promotores · '+mV+' val / '+mE+' env</div></div>'+(tv?'<span class="pct-pill '+pctColor(mP)+'">'+mP+'%</span>':'')+'<i class="ti ti-chevron-right prom-arrow"></i>';
+    div.onclick=(function(m){return function(){isAdmin=true;showSupervisor(m,true);};})(mesa);el.appendChild(div);
   });
 }
 function dashBack(){if(isAdmin)showScreen('screen-admin-vista');else logout();}
 function supBack(){if(isAdmin)showScreen('screen-admin-vista');else logout();}
 
-// BASE FILES
 function checkSavedBase(){
   if(localStorage.getItem(LS_SKUS)){var m=JSON.parse(localStorage.getItem(LS_SKUS+'_m')||'{}');document.getElementById('z-skus').classList.add('saved');document.getElementById('z-skus').querySelector('.uz-icon i').className='ti ti-circle-check';document.getElementById('lbl-skus').innerHTML='SKUs de validación <span class="saved-tag">GUARDADO</span>';document.getElementById('n-skus').textContent=m.name||'Guardado';}
   if(localStorage.getItem(LS_OBJ)){var m2=JSON.parse(localStorage.getItem(LS_OBJ+'_m')||'{}');document.getElementById('z-obj').classList.add('saved');document.getElementById('z-obj').querySelector('.uz-icon i').className='ti ti-circle-check';document.getElementById('lbl-obj').innerHTML='Objetivos + DNI del mes <span class="saved-tag">GUARDADO</span>';document.getElementById('n-obj').textContent=m2.name||'Guardado';}
@@ -594,14 +550,12 @@ function clearBase(){
   if(!confirm('¿Eliminás los archivos base guardados?'))return;
   [LS_SKUS,LS_SKUS+'_m',LS_OBJ,LS_OBJ+'_m'].forEach(function(k){localStorage.removeItem(k);});
   ['skus','obj'].forEach(function(k){var z=document.getElementById('z-'+k);z.classList.remove('saved','done');z.querySelector('.uz-icon i').className=k==='skus'?'ti ti-table':'ti ti-target';document.getElementById('n-'+k).textContent='';document.getElementById('f-'+k).value='';files[k]=null;});
-  document.getElementById('lbl-skus').innerHTML='SKUs de validación';
-  document.getElementById('lbl-obj').innerHTML='Objetivos + DNI del mes';
-  checkProcesar();
+  document.getElementById('lbl-skus').innerHTML='SKUs de validación';document.getElementById('lbl-obj').innerHTML='Objetivos + DNI del mes';checkProcesar();
 }
 function checkProcesar(){
   var ok=files.tareas&&(files.skus||localStorage.getItem(LS_SKUS))&&(files.obj||localStorage.getItem(LS_OBJ));
   document.getElementById('btn-procesar').disabled=!ok;
-  document.getElementById('upload-status').textContent=ok?'Listo para procesar':'Subí el XLSX de tareas para continuar';
+  document.getElementById('upload-status').textContent=ok?'Listo para procesar':'Subí el archivo de tareas para continuar';
 }
 function onFile(input,key){
   var f=input.files[0];if(!f)return;files[key]=f;
@@ -613,27 +567,19 @@ function onFile(input,key){
   checkProcesar();
 }
 
-// PROCESAR
 async function procesar(){
   var btn=document.getElementById('btn-procesar');
   btn.textContent='Procesando...';btn.disabled=true;
-
-  var rawT=await readXlsx(files.tareas);
+  var rawT=await readTareas(files.tareas); // CSV o XLSX automático
   var rawS=files.skus?await readXlsx(files.skus):JSON.parse(localStorage.getItem(LS_SKUS)||'[]');
   var rawO=files.obj?await readXlsx(files.obj):JSON.parse(localStorage.getItem(LS_OBJ)||'[]');
   var rawV=files.venta?await readXlsx(files.venta):null;
-
   if(files.skus){localStorage.setItem(LS_SKUS,JSON.stringify(rawS));localStorage.setItem(LS_SKUS+'_m',JSON.stringify({name:files.skus.name}));}
   if(files.obj){localStorage.setItem(LS_OBJ,JSON.stringify(rawO));localStorage.setItem(LS_OBJ+'_m',JSON.stringify({name:files.obj.name}));}
-
   var tv=!!rawV;
-
-  // Día más reciente
   var diasSet={},dias=[];
   rawT.forEach(function(r){if(r.dia&&!diasSet[r.dia]){diasSet[r.dia]=true;dias.push(r.dia);}});
   dias.sort();var hoy=dias[dias.length-1];
-
-  // Historial (días anteriores, solo PALACIO + VALUE_CREATION con validadas > 0)
   var historial={};
   rawT.forEach(function(r){
     if(String(r.dia)===String(hoy))return;
@@ -641,176 +587,64 @@ async function procesar(){
     if(r.PILAR!=='VALUE_CREATION')return;
     if(Number(r.TAREAS_VALIDADAS)>0){var p=r.PROMOTOR||'SIN ASIGNAR';historial[p]=(historial[p]||0)+1;}
   });
-
-  // Tareas de hoy: PALACIO + VALUE_CREATION + sin validar
   var tareasHoy=rawT.filter(function(r){
     return r.desc_ddc_wh&&r.desc_ddc_wh.toUpperCase().includes('PALACIO')&&
-      r.PILAR==='VALUE_CREATION'&&String(r.dia)===String(hoy)&&
-      Number(r.TAREAS_VALIDADAS)===0;
+      r.PILAR==='VALUE_CREATION'&&String(r.dia)===String(hoy)&&Number(r.TAREAS_VALIDADAS)===0;
   });
-  tareasHoy.forEach(function(r){
-    // PDV: últimos 5 dígitos del cliente_id
-    r._pdv=extractPdv(r.cliente_id);
-    r._tu=String(r.TAREA||'').toUpperCase();
-  });
-
-  // SKU map: full_description -> [sku_ids]
+  tareasHoy.forEach(function(r){r._pdv=extractPdv(r.cliente_id);r._tu=String(r.TAREA||'').toUpperCase();});
   var skuMap={};
-  rawS.forEach(function(r){
-    var k=String(r.full_description||'').toUpperCase();
-    if(!skuMap[k])skuMap[k]=[];
-    skuMap[k].push(normSku(r.sku_id));
-  });
-
-  // Venta map: Cod. Cliente (número) -> Set de códigos SKU
+  rawS.forEach(function(r){var k=String(r.full_description||'').toUpperCase();if(!skuMap[k])skuMap[k]=[];skuMap[k].push(normSku(r.sku_id));});
   var ventaPdv={},pdvNombre={};
-  if(rawV){
-    rawV.forEach(function(r){
-      var cod=Number(r['Cod. Cliente']);
-      var sku=String(r['Código']);
-      if(!ventaPdv[cod])ventaPdv[cod]={};
-      ventaPdv[cod][sku]=true;
-      if(!pdvNombre[cod])pdvNombre[cod]=String(r['Descripción']||'');
-    });
-  }
-
-  // Objetivos: soporta columnas reales del archivo (Nombre, OBJETIVO como decimal)
+  if(rawV){rawV.forEach(function(r){var cod=Number(r['Cod. Cliente']),sku=String(r['Código']);if(!ventaPdv[cod])ventaPdv[cod]={};ventaPdv[cod][sku]=true;if(!pdvNombre[cod])pdvNombre[cod]=String(r['Descripción']||'');});}
   var objMap={},mesaMap={},dniMap={},rolMap={};
   rawO.forEach(function(r){
     var p=String(r.Nombre||r.PROMOTOR||r.nombre||r.promotor||'').trim();
     var dni=String(r.DNI||r.dni||'').trim();
     if(!p&&!dni)return;
-    var objRaw=Number(r.OBJETIVO||r.OBJETIVO_MES||r.objetivo||r.objetivo_mes||0)||0;
-    // Si es decimal (ej: 0.45) lo convertimos a porcentaje (45)
+    var objRaw=Number(r.OBJETIVO||r.OBJETIVO_MES||r.objetivo||0)||0;
     var objFinal=objRaw>0&&objRaw<1?Math.round(objRaw*100):Math.round(objRaw);
-    if(p){
-      objMap[p]=objFinal;
-      mesaMap[p]=String(r.Mesa||r.MESA||r.mesa||'').trim();
-      rolMap[p]=String(r.ROL||r.rol||'PROMOTOR').trim().toUpperCase();
-    }
+    if(p){objMap[p]=objFinal;mesaMap[p]=String(r.Mesa||r.MESA||r.mesa||'').trim();rolMap[p]=String(r.ROL||r.rol||'PROMOTOR').trim().toUpperCase();}
     if(dni&&p)dniMap[dni]=p;
   });
-
-  // Construir promotores
   var promotores={},tareasEnvProm={};
   tareasHoy.forEach(function(r){
     var p=r.PROMOTOR||'SIN ASIGNAR';
-    if(!promotores[p]){
-      var dniP='';
-      Object.keys(dniMap).forEach(function(d){if(dniMap[d]===p)dniP=d;});
-      promotores[p]={
-        enviadas:0,validadas:[],pendientes:[],
-        historial:historial[p]||0,
-        objetivo:objMap[p]||null,
-        mesa:mesaMap[p]||null,
-        rol:rolMap[p]||'PROMOTOR',
-        dni:dniP,
-        tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0
-      };
-    }
+    if(!promotores[p]){var dniP='';Object.keys(dniMap).forEach(function(d){if(dniMap[d]===p)dniP=d;});promotores[p]={enviadas:0,validadas:[],pendientes:[],historial:historial[p]||0,objetivo:objMap[p]||null,mesa:mesaMap[p]||null,rol:rolMap[p]||'PROMOTOR',dni:dniP,tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0};}
     promotores[p].enviadas++;
-    if(!tareasEnvProm[p])tareasEnvProm[p]={};
-    tareasEnvProm[p][r._tu]=(tareasEnvProm[p][r._tu]||0)+1;
-
-    if(tv){
-      var skus=skuMap[r._tu];
-      if(skus&&r._pdv){
-        var vendidos=ventaPdv[r._pdv]||{};
-        var match=null;
-        for(var i=0;i<skus.length;i++){if(vendidos[skus[i]]){match=skus[i];break;}}
-        if(match){
-          promotores[p].validadas.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',sku:match,tareaUp:r._tu});
-          return;
-        }
-      }
-      promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',tareaUp:r._tu});
-    } else {
-      promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:'',tareaUp:r._tu});
-    }
+    if(!tareasEnvProm[p])tareasEnvProm[p]={};tareasEnvProm[p][r._tu]=(tareasEnvProm[p][r._tu]||0)+1;
+    if(tv){var skus=skuMap[r._tu];if(skus&&r._pdv){var vendidos=ventaPdv[r._pdv]||{};var match=null;for(var i=0;i<skus.length;i++){if(vendidos[skus[i]]){match=skus[i];break;}}if(match){promotores[p].validadas.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',sku:match,tareaUp:r._tu});return;}}promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',tareaUp:r._tu});}
+    else promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:'',tareaUp:r._tu});
   });
-
-  // Tarea principal (más enviadas)
-  Object.keys(promotores).forEach(function(p){
-    var counts=tareasEnvProm[p]||{},maxT=null,maxC=0;
-    Object.keys(counts).forEach(function(t){if(counts[t]>maxC){maxC=counts[t];maxT=t;}});
-    promotores[p].tareaPrincipal=maxT;
-    promotores[p].tareaPrincipalEnv=maxC;
-    if(maxT&&tv){
-      promotores[p].tareaPrincipalVal=promotores[p].validadas.filter(function(v){return v.tareaUp===maxT;}).length;
-    }
-  });
-
-  // Agregar promotores del archivo de objetivos sin tareas hoy
-  Object.keys(dniMap).forEach(function(dni){
-    var p=dniMap[dni];
-    if(!promotores[p]){
-      promotores[p]={enviadas:0,validadas:[],pendientes:[],historial:historial[p]||0,objetivo:objMap[p]||null,mesa:mesaMap[p]||null,rol:rolMap[p]||'PROMOTOR',dni:dni,tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0};
-    }
-    if(!promotores[p].dni)promotores[p].dni=dni;
-  });
-
-  // Tendencia global del equipo (últimos 7 días)
+  Object.keys(promotores).forEach(function(p){var counts=tareasEnvProm[p]||{},maxT=null,maxC=0;Object.keys(counts).forEach(function(t){if(counts[t]>maxC){maxC=counts[t];maxT=t;}});promotores[p].tareaPrincipal=maxT;promotores[p].tareaPrincipalEnv=maxC;if(maxT&&tv)promotores[p].tareaPrincipalVal=promotores[p].validadas.filter(function(v){return v.tareaUp===maxT;}).length;});
+  Object.keys(dniMap).forEach(function(dni){var p=dniMap[dni];if(!promotores[p]){promotores[p]={enviadas:0,validadas:[],pendientes:[],historial:historial[p]||0,objetivo:objMap[p]||null,mesa:mesaMap[p]||null,rol:rolMap[p]||'PROMOTOR',dni:dni,tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0};}if(!promotores[p].dni)promotores[p].dni=dni;});
   var tendenciaData={};
-  rawT.forEach(function(r){
-    if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
-    if(r.PILAR!=='VALUE_CREATION')return;
-    var d=String(r.dia);
-    if(!tendenciaData[d])tendenciaData[d]={validadas:0,enviadas:0};
-    tendenciaData[d].enviadas++;
-    if(Number(r.TAREAS_VALIDADAS)>0)tendenciaData[d].validadas++;
-  });
+  rawT.forEach(function(r){if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;if(r.PILAR!=='VALUE_CREATION')return;var d=String(r.dia);if(!tendenciaData[d])tendenciaData[d]={validadas:0,enviadas:0};tendenciaData[d].enviadas++;if(Number(r.TAREAS_VALIDADAS)>0)tendenciaData[d].validadas++;});
   var tendenciaDias=Object.keys(tendenciaData).sort().slice(-7);
-
-  // Tendencia personal por promotor
   var tendenciaPersonal={};
-  rawT.forEach(function(r){
-    if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
-    if(r.PILAR!=='VALUE_CREATION')return;
-    var p=r.PROMOTOR||'SIN ASIGNAR',d=String(r.dia);
-    if(!tendenciaPersonal[p])tendenciaPersonal[p]={};
-    if(!tendenciaPersonal[p][d])tendenciaPersonal[p][d]={validadas:0,enviadas:0};
-    tendenciaPersonal[p][d].enviadas++;
-    if(Number(r.TAREAS_VALIDADAS)>0)tendenciaPersonal[p][d].validadas++;
-  });
-
+  rawT.forEach(function(r){if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;if(r.PILAR!=='VALUE_CREATION')return;var p=r.PROMOTOR||'SIN ASIGNAR',d=String(r.dia);if(!tendenciaPersonal[p])tendenciaPersonal[p]={};if(!tendenciaPersonal[p][d])tendenciaPersonal[p][d]={validadas:0,enviadas:0};tendenciaPersonal[p][d].enviadas++;if(Number(r.TAREAS_VALIDADAS)>0)tendenciaPersonal[p][d].validadas++;});
   appData={hoy:hoy,promotores:promotores,tieneVenta:tv,tendenciaData:tendenciaData,tendenciaDias:tendenciaDias,tendenciaPersonal:tendenciaPersonal};
   localStorage.setItem(LS_APP,JSON.stringify(appData));
-
   document.getElementById('admin-ver-card').style.display='block';
   btn.innerHTML='<i class="ti ti-check" style="vertical-align:-2px;margin-right:6px;"></i>Publicado correctamente';
   document.getElementById('admin-fecha-sub').textContent='Último proceso: '+fmtFecha(hoy);
   setTimeout(function(){btn.innerHTML='<i class="ti ti-player-play" style="vertical-align:-2px;margin-right:6px;"></i>Procesar y publicar';btn.disabled=false;},3000);
 }
 
-// GAUGE
-function setGauge(pct){
-  var arc=document.getElementById('gauge-arc');if(!arc)return;
-  var offset=141.4-(141.4*Math.min(pct,100)/100);
-  arc.style.stroke=pct>=80?'#1D9E75':pct>=50?'#BA7517':'#E24B4A';
-  arc.style.strokeDashoffset=offset;
-}
-
-// MINI CHART
-function renderMiniChart(containerId,dias,dataByDia,hoy){
-  var el=document.getElementById(containerId);if(!el)return;
+function setGauge(pct){var arc=document.getElementById('gauge-arc');if(!arc)return;arc.style.stroke=pct>=80?'#1D9E75':pct>=50?'#BA7517':'#E24B4A';arc.style.strokeDashoffset=141.4-(141.4*Math.min(pct,100)/100);}
+function renderMiniChart(id,dias,data,hoy){
+  var el=document.getElementById(id);if(!el)return;
   if(!dias||!dias.length){el.parentElement.style.display='none';return;}
-  el.parentElement.style.display='block';
-  el.innerHTML='';
+  el.parentElement.style.display='block';el.innerHTML='';
   dias.forEach(function(d){
-    var dat=dataByDia[d]||{validadas:0,enviadas:0};
-    var pct=dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0;
-    var color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
-    var isHoy=String(d)===String(hoy);
+    var dat=data[d]||{validadas:0,enviadas:0},pct=dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0;
+    var color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)',isHoy=String(d)===String(hoy);
     var lbl=String(d).slice(6,8)+'/'+String(d).slice(4,6);
     var bar=document.createElement('div');bar.className='mini-bar';
-    bar.innerHTML='<div class="mini-bar-val">'+pct+'%</div>'+
-      '<div class="mini-bar-fill" style="height:'+Math.max(pct,4)+'%;background:'+color+';'+(isHoy?'outline:2px solid var(--blue);':'')+'"></div>'+
-      '<div class="mini-bar-lbl" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+lbl+'</div>';
+    bar.innerHTML='<div class="mini-bar-val">'+pct+'%</div><div class="mini-bar-fill" style="height:'+Math.max(pct,4)+'%;background:'+color+';'+(isHoy?'outline:2px solid var(--blue);':'')+'"></div><div class="mini-bar-lbl" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+lbl+'</div>';
     el.appendChild(bar);
   });
 }
 
-// DASHBOARD PROMOTOR
 function showDashboard(nombre,fromAdmin){
   var data=appData.promotores[nombre];
   showScreen('screen-dashboard');
@@ -820,35 +654,13 @@ function showDashboard(nombre,fromAdmin){
   document.getElementById('d-mesa').textContent=data.mesa||'';
   document.getElementById('admin-viewing-badge').style.display=fromAdmin?'inline-flex':'none';
   document.getElementById('dash-back-label').textContent=fromAdmin?'Volver a vistas':'Cerrar sesión';
-
-  var tv=appData.tieneVenta,hist=data.historial||0,obj=data.objetivo;
-  var acum=hist+(tv?data.validadas.length:0);
-  var diaActual=calcDia(appData.hoy);
-
+  var tv=appData.tieneVenta,hist=data.historial||0,obj=data.objetivo,acum=hist+(tv?data.validadas.length:0),diaAct=calcDia(appData.hoy);
   document.getElementById('sin-venta-banner').style.display=tv?'none':'flex';
-
-  // KPI header
-  if(tv){
-    var pctDia=data.enviadas>0?Math.round(data.validadas.length/data.enviadas*1000)/10:0;
-    document.getElementById('d-pct').textContent=pctDia+'%';
-    document.getElementById('d-pct-lbl').textContent='cobertura del día';
-    document.getElementById('d-val-num').textContent=data.validadas.length;
-  } else {
-    document.getElementById('d-pct').textContent='—';
-    document.getElementById('d-pct-lbl').textContent='sin venta cargada';
-    document.getElementById('d-val-num').textContent='0';
-  }
+  if(tv){var pctDia=data.enviadas>0?Math.round(data.validadas.length/data.enviadas*1000)/10:0;document.getElementById('d-pct').textContent=pctDia+'%';document.getElementById('d-pct-lbl').textContent='cobertura del día';document.getElementById('d-val-num').textContent=data.validadas.length;}
+  else{document.getElementById('d-pct').textContent='—';document.getElementById('d-pct-lbl').textContent='sin venta cargada';document.getElementById('d-val-num').textContent='0';}
   document.getElementById('kpi-hist').textContent=acum;
-  if(obj){
-    document.getElementById('kpi-obj-pct').textContent=Math.round(acum/obj*100)+'%';
-    var ritmoNec=obj/31,ritmoReal=acum/Math.max(diaActual,1),ritmoPct=Math.round(ritmoReal/ritmoNec*100);
-    document.getElementById('kpi-ritmo').textContent=(ritmoPct>=100?'✓ ':'')+ritmoPct+'%';
-  } else {
-    document.getElementById('kpi-obj-pct').textContent='—';
-    document.getElementById('kpi-ritmo').textContent='—';
-  }
-
-  // Tarea principal
+  if(obj){document.getElementById('kpi-obj-pct').textContent=Math.round(acum/obj*100)+'%';var rP=Math.round((acum/Math.max(diaAct,1))/(obj/31)*100);document.getElementById('kpi-ritmo').textContent=(rP>=100?'✓ ':'')+rP+'%';}
+  else{document.getElementById('kpi-obj-pct').textContent='—';document.getElementById('kpi-ritmo').textContent='—';}
   if(data.tareaPrincipal){
     document.getElementById('priority-card').style.display='block';
     var tn=data.tareaPrincipal.charAt(0)+data.tareaPrincipal.slice(1).toLowerCase();
@@ -859,172 +671,87 @@ function showDashboard(nombre,fromAdmin){
     document.getElementById('priority-fill').style.width=pp+'%';
     document.getElementById('priority-pct').textContent=pp+'% de avance en esta tarea';
   } else document.getElementById('priority-card').style.display='none';
-
-  // Gauge
   if(obj){
     document.getElementById('gauge-card').style.display='block';
-    var gPct=Math.round(acum/obj*100);
-    setGauge(gPct);
-    document.getElementById('gauge-pct-text').textContent=gPct+'%';
-    document.getElementById('gauge-pct-text').style.color=gPct>=80?'var(--green)':gPct>=50?'var(--amber)':'var(--red)';
+    var gP=Math.round(acum/obj*100);setGauge(gP);
+    document.getElementById('gauge-pct-text').textContent=gP+'%';
+    document.getElementById('gauge-pct-text').style.color=gP>=80?'var(--green)':gP>=50?'var(--amber)':'var(--red)';
     document.getElementById('gauge-sub').textContent=acum+' de '+obj+' validaciones';
-    var ritmoAct=Math.round(acum/Math.max(diaActual,1)*10)/10;
-    var ritmoNecDia=Math.round(obj/31*10)/10;
-    var diasFaltan=31-diaActual;
-    var falta=Math.max(obj-acum,0);
-    var ritmoParaLlegar=diasFaltan>0?Math.ceil(falta/diasFaltan):falta;
+    var rA=Math.round(acum/Math.max(diaAct,1)*10)/10,rN=Math.round(obj/31*10)/10,dF=31-diaAct,falta=Math.max(obj-acum,0),rPL=dF>0?Math.ceil(falta/dF):falta;
     var badge=document.getElementById('gauge-ritmo-badge');
-    if(gPct>=100){badge.className='gauge-ritmo ritmo-ok';badge.textContent='✓ Objetivo cumplido';}
-    else if(ritmoAct>=ritmoNecDia){badge.className='gauge-ritmo ritmo-ok';badge.textContent='✓ En ritmo · '+ritmoAct+'/día';}
-    else{badge.className='gauge-ritmo ritmo-warn';badge.textContent='Necesitás '+ritmoParaLlegar+'/día · faltan '+diasFaltan+' días';}
-  } else {
-    document.getElementById('gauge-card').style.display='none';
-  }
-
-  // Tendencia personal
-  var tendPers=appData.tendenciaPersonal&&appData.tendenciaPersonal[nombre];
-  if(tendPers){
-    var diasP=Object.keys(tendPers).sort().slice(-7);
-    if(diasP.length>0){renderMiniChart('mini-chart-personal',diasP,tendPers,appData.hoy);}
-    else document.getElementById('tendencia-personal-card').style.display='none';
-  } else document.getElementById('tendencia-personal-card').style.display='none';
-
-  // Stats
-  if(tv){
-    document.getElementById('stats-dia').style.display='grid';document.getElementById('stats-sin-venta').style.display='none';
-    document.getElementById('d-s-val').textContent=data.validadas.length;
-    document.getElementById('d-s-pend').textContent=data.pendientes.length;
-    document.getElementById('d-s-total').textContent=data.enviadas;
-    document.getElementById('lbl-val-hdr').style.display='block';
-  } else {
-    document.getElementById('stats-dia').style.display='none';document.getElementById('stats-sin-venta').style.display='grid';
-    document.getElementById('d-sv-enviadas').textContent=data.enviadas;
-    document.getElementById('d-sv-historial').textContent=hist;
-    document.getElementById('lbl-val-hdr').style.display='none';
-  }
-
-  // Tareas validadas
+    if(gP>=100){badge.className='gauge-ritmo ritmo-ok';badge.textContent='✓ Objetivo cumplido';}
+    else if(rA>=rN){badge.className='gauge-ritmo ritmo-ok';badge.textContent='✓ En ritmo · '+rA+'/día';}
+    else{badge.className='gauge-ritmo ritmo-warn';badge.textContent='Necesitás '+rPL+'/día · faltan '+dF+' días';}
+  } else document.getElementById('gauge-card').style.display='none';
+  var tP=appData.tendenciaPersonal&&appData.tendenciaPersonal[nombre];
+  if(tP){var dP=Object.keys(tP).sort().slice(-7);if(dP.length)renderMiniChart('mini-chart-personal',dP,tP,appData.hoy);else document.getElementById('tendencia-personal-card').style.display='none';}
+  else document.getElementById('tendencia-personal-card').style.display='none';
+  if(tv){document.getElementById('stats-dia').style.display='grid';document.getElementById('stats-sin-venta').style.display='none';document.getElementById('d-s-val').textContent=data.validadas.length;document.getElementById('d-s-pend').textContent=data.pendientes.length;document.getElementById('d-s-total').textContent=data.enviadas;document.getElementById('lbl-val-hdr').style.display='block';}
+  else{document.getElementById('stats-dia').style.display='none';document.getElementById('stats-sin-venta').style.display='grid';document.getElementById('d-sv-enviadas').textContent=data.enviadas;document.getElementById('d-sv-historial').textContent=hist;document.getElementById('lbl-val-hdr').style.display='none';}
   var lv=document.getElementById('list-validadas');lv.innerHTML='';
-  if(tv){
-    if(!data.validadas.length)lv.innerHTML='<div class="empty-state"><i class="ti ti-mood-sad" style="font-size:24px;display:block;margin-bottom:6px;"></i>Aún no hay tareas validadas</div>';
-    else data.validadas.forEach(function(t){
-      var c=document.createElement('div');c.className='task-card';
-      c.innerHTML='<div class="task-row"><div class="task-ic ic-green"><i class="ti ti-check"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div><div class="task-pdv">'+(t.nombre||'PDV '+t.pdv)+' · cod. '+t.pdv+'</div><span class="task-badge tb-green">Validada · SKU '+t.sku+'</span></div></div>';
-      lv.appendChild(c);
-    });
-  }
-
-  // Pendientes
+  if(tv){if(!data.validadas.length)lv.innerHTML='<div class="empty-state"><i class="ti ti-mood-sad" style="font-size:24px;display:block;margin-bottom:6px;"></i>Aún no hay tareas validadas</div>';else data.validadas.forEach(function(t){var c=document.createElement('div');c.className='task-card';c.innerHTML='<div class="task-row"><div class="task-ic ic-green"><i class="ti ti-check"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div><div class="task-pdv">'+(t.nombre||'PDV '+t.pdv)+' · cod. '+t.pdv+'</div><span class="task-badge tb-green">Validada · SKU '+t.sku+'</span></div></div>';lv.appendChild(c);});}
   document.getElementById('lbl-pend-hdr').textContent=tv?'Pendientes de validar':'Tareas planificadas hoy';
   var lp=document.getElementById('pendientes-list');lp.innerHTML='';
-  data.pendientes.slice(0,30).forEach(function(t){
-    var c=document.createElement('div');c.className='task-card';
-    if(tv){
-      c.innerHTML='<div class="task-row"><div class="task-ic ic-amber"><i class="ti ti-clock"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div><div class="task-pdv">'+(t.nombre?t.nombre+' · cod. '+t.pdv:'PDV '+t.pdv)+'</div><span class="task-badge tb-amber">Sin compra del SKU</span></div></div>';
-    } else {
-      c.innerHTML='<div class="task-row"><div class="task-ic ic-blue"><i class="ti ti-calendar-event"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div>'+(t.pdv?'<div class="task-pdv">PDV '+t.pdv+'</div>':'')+'<span class="task-badge" style="background:var(--blue-light);color:var(--blue-text);">Planificada</span></div></div>';
-    }
-    lp.appendChild(c);
-  });
+  data.pendientes.slice(0,30).forEach(function(t){var c=document.createElement('div');c.className='task-card';if(tv)c.innerHTML='<div class="task-row"><div class="task-ic ic-amber"><i class="ti ti-clock"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div><div class="task-pdv">'+(t.nombre?t.nombre+' · cod. '+t.pdv:'PDV '+t.pdv)+'</div><span class="task-badge tb-amber">Sin compra del SKU</span></div></div>';else c.innerHTML='<div class="task-row"><div class="task-ic ic-blue"><i class="ti ti-calendar-event"></i></div><div style="flex:1;min-width:0;"><div class="task-name">'+t.tarea+'</div>'+(t.pdv?'<div class="task-pdv">PDV '+t.pdv+'</div>':'')+'<span class="task-badge" style="background:var(--blue-light);color:var(--blue-text);">Planificada</span></div></div>';lp.appendChild(c);});
   if(data.pendientes.length>30){var mm=document.createElement('div');mm.style.cssText='text-align:center;padding:10px;font-size:13px;color:var(--text2);';mm.textContent='... y '+(data.pendientes.length-30)+' tareas más';lp.appendChild(mm);}
-  document.getElementById('toggle-lbl').innerHTML='Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';
-  lp.classList.add('hidden-list');
+  document.getElementById('toggle-lbl').innerHTML='Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';lp.classList.add('hidden-list');
 }
-
-function togglePendientes(){
-  var l=document.getElementById('pendientes-list'),t=document.getElementById('toggle-lbl');
-  if(l.classList.contains('hidden-list')){l.classList.remove('hidden-list');t.innerHTML='Ocultar <i class="ti ti-chevron-up" style="vertical-align:-2px;"></i>';}
-  else{l.classList.add('hidden-list');t.innerHTML='Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';}
-}
-
-// SUPERVISOR
+function togglePendientes(){var l=document.getElementById('pendientes-list'),t=document.getElementById('toggle-lbl');if(l.classList.contains('hidden-list')){l.classList.remove('hidden-list');t.innerHTML='Ocultar <i class="ti ti-chevron-up" style="vertical-align:-2px;"></i>';}else{l.classList.add('hidden-list');t.innerHTML='Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';}}
 function showSupervisor(mesa,fromAdmin){
   currentSupMesa=mesa;showScreen('screen-supervisor');
   document.getElementById('admin-sup-badge').style.display=fromAdmin?'inline-flex':'none';
   document.getElementById('sup-back-label').textContent=fromAdmin?'Volver a vistas':'Cerrar sesión';
   var tv=appData.tieneVenta,proms=getSupProms();
-  var tEnv=proms.reduce(function(s,e){return s+e[1].enviadas;},0);
-  var tVal=proms.reduce(function(s,e){return s+e[1].validadas.length;},0);
-  var tHist=proms.reduce(function(s,e){return s+e[1].historial;},0);
-  var pct=tEnv>0?Math.round(tVal/tEnv*1000)/10:0;
+  var tE=proms.reduce(function(s,e){return s+e[1].enviadas;},0),tV=proms.reduce(function(s,e){return s+e[1].validadas.length;},0),tH=proms.reduce(function(s,e){return s+e[1].historial;},0);
+  var pct=tE>0?Math.round(tV/tE*1000)/10:0;
   document.getElementById('sup-title').textContent=mesa||'Equipo completo';
-  document.getElementById('sup-sub').textContent=tv?(tVal+' validadas de '+tEnv+' enviadas · '+pct+'% cobertura'):(tEnv+' tareas planificadas · '+tHist+' validadas en el mes');
+  document.getElementById('sup-sub').textContent=tv?(tV+' validadas de '+tE+' enviadas · '+pct+'% cobertura'):(tE+' tareas planificadas · '+tH+' validadas en el mes');
   supTab('mesas');
 }
 var currentTab='mesas';
-function supTab(tab){
-  currentTab=tab;
-  ['mesas','ranking','tendencia'].forEach(function(t){document.getElementById('tab-'+t).classList.toggle('active',t===tab);document.getElementById('sup-panel-'+t).style.display=t===tab?'block':'none';});
-  if(tab==='mesas')renderSupMesas();else if(tab==='ranking')renderSupRanking();else renderSupTendencia();
-}
-function getSupProms(){
-  return Object.entries(appData.promotores).filter(function(e){return e[1].rol!=='SUPERVISOR'&&(currentSupMesa===null||e[1].mesa===currentSupMesa);});
-}
-
+function supTab(tab){currentTab=tab;['mesas','ranking','tendencia'].forEach(function(t){document.getElementById('tab-'+t).classList.toggle('active',t===tab);document.getElementById('sup-panel-'+t).style.display=t===tab?'block':'none';});if(tab==='mesas')renderSupMesas();else if(tab==='ranking')renderSupRanking();else renderSupTendencia();}
+function getSupProms(){return Object.entries(appData.promotores).filter(function(e){return e[1].rol!=='SUPERVISOR'&&(currentSupMesa===null||e[1].mesa===currentSupMesa);});}
 function renderSupMesas(){
   var el=document.getElementById('sup-panel-mesas'),proms=getSupProms(),tv=appData.tieneVenta;
   var bajos=tv?proms.filter(function(e){return e[1].enviadas>0&&e[1].validadas.length===0;}).map(function(e){return e[0];}):[];
   var alertHtml=bajos.length?'<div class="alert-banner"><i class="ti ti-alert-triangle"></i><p><strong>'+bajos.length+' promotor'+(bajos.length>1?'es':'')+' sin validaciones:</strong> '+bajos.join(', ')+'</p></div>':'';
   var mesas={};proms.forEach(function(e){var m=e[1].mesa||'Sin mesa';if(!mesas[m])mesas[m]=[];mesas[m].push(e);});
-  var tEnv=proms.reduce(function(s,e){return s+e[1].enviadas;},0),tVal=proms.reduce(function(s,e){return s+e[1].validadas.length;},0),tHist=proms.reduce(function(s,e){return s+e[1].historial;},0);
-  var html=alertHtml+'<div class="stats-3" style="margin-bottom:12px;"><div class="stat-card"><div class="stat-val '+(tv?'val-green':'val-blue')+'">'+(tv?tVal:proms.length)+'</div><div class="stat-lbl">'+(tv?'Validadas hoy':'Promotores')+'</div></div><div class="stat-card"><div class="stat-val val-gray">'+tEnv+'</div><div class="stat-lbl">'+(tv?'Enviadas':'Tareas hoy')+'</div></div><div class="stat-card"><div class="stat-val val-green">'+tHist+'</div><div class="stat-lbl">Acum. mes</div></div></div>';
+  var tE=proms.reduce(function(s,e){return s+e[1].enviadas;},0),tV=proms.reduce(function(s,e){return s+e[1].validadas.length;},0),tH=proms.reduce(function(s,e){return s+e[1].historial;},0);
+  var html=alertHtml+'<div class="stats-3" style="margin-bottom:12px;"><div class="stat-card"><div class="stat-val '+(tv?'val-green':'val-blue')+'">'+(tv?tV:proms.length)+'</div><div class="stat-lbl">'+(tv?'Validadas hoy':'Promotores')+'</div></div><div class="stat-card"><div class="stat-val val-gray">'+tE+'</div><div class="stat-lbl">'+(tv?'Enviadas':'Tareas hoy')+'</div></div><div class="stat-card"><div class="stat-val val-green">'+tH+'</div><div class="stat-lbl">Acum. mes</div></div></div>';
   Object.keys(mesas).sort().forEach(function(mesa){
-    var mp=mesas[mesa],mEnv=mp.reduce(function(s,e){return s+e[1].enviadas;},0),mVal=mp.reduce(function(s,e){return s+e[1].validadas.length;},0),mPct=mEnv>0?Math.round(mVal/mEnv*100):0,color=mesaColor(mPct);
+    var mp=mesas[mesa],mE=mp.reduce(function(s,e){return s+e[1].enviadas;},0),mV=mp.reduce(function(s,e){return s+e[1].validadas.length;},0),mP=mE>0?Math.round(mV/mE*100):0,color=mesaColor(mP);
     var ph=mp.sort(function(a,b){var pa=a[1].enviadas>0?a[1].validadas.length/a[1].enviadas:0,pb=b[1].enviadas>0?b[1].validadas.length/b[1].enviadas:0;return pb-pa;}).map(function(e){
       var n=e[0],d=e[1],pp=d.enviadas>0?Math.round(d.validadas.length/d.enviadas*100):0;
-      var acum=d.historial+(tv?d.validadas.length:0);
-      var objPct=d.objetivo>0?Math.round(acum/d.objetivo*100):null;
+      var acum=d.historial+(tv?d.validadas.length:0),objPct=d.objetivo>0?Math.round(acum/d.objetivo*100):null;
       var al=tv&&d.enviadas>0&&d.validadas.length===0?'<i class="ti ti-alert-circle" style="color:var(--red);font-size:14px;"></i>':'';
-      var clickAttr=isAdmin?'onclick="showDashboard(\''+n.replace(/'/g,"\\'")+"',true)\"":'';
-      return '<div class="mesa-prom-row" '+clickAttr+'><div class="mesa-prom-avatar">'+initials(n)+'</div><div class="mesa-prom-name">'+n+'</div>'+al+'<span class="mesa-prom-pill '+(tv?pctColor(pp):'pill-gray')+'">'+(tv?pp+'%':d.enviadas+' t')+'</span>'+(objPct!==null?'<span style="font-size:10px;color:var(--text2);margin-left:3px;">IP:'+objPct+'%</span>':'')+'</div>';
+      var click=isAdmin?'onclick="showDashboard(\''+n.replace(/'/g,"\\'")+"',true)\"":'';
+      return '<div class="mesa-prom-row" '+click+'><div class="mesa-prom-avatar">'+initials(n)+'</div><div class="mesa-prom-name">'+n+'</div>'+al+'<span class="mesa-prom-pill '+(tv?pctColor(pp):'pill-gray')+'">'+(tv?pp+'%':d.enviadas+' t')+'</span>'+(objPct!==null?'<span style="font-size:10px;color:var(--text2);margin-left:3px;">IP:'+objPct+'%</span>':'')+'</div>';
     }).join('');
-    html+='<div class="mesa-card"><div class="mesa-header"><div class="mesa-name">'+mesa+'</div>'+(tv?'<div class="mesa-pct" style="color:'+color+';">'+mPct+'%</div>':'<div class="mesa-pct" style="color:var(--gray);">'+mp.length+' prom.</div>')+'</div>'+(tv?'<div class="mesa-prog-track"><div class="mesa-prog-fill" style="width:'+mPct+'%;background:'+color+';"></div></div>':'')+'<div>'+ph+'</div></div>';
+    html+='<div class="mesa-card"><div class="mesa-header"><div class="mesa-name">'+mesa+'</div>'+(tv?'<div class="mesa-pct" style="color:'+color+';">'+mP+'%</div>':'<div class="mesa-pct" style="color:var(--gray);">'+mp.length+' prom.</div>')+'</div>'+(tv?'<div class="mesa-prog-track"><div class="mesa-prog-fill" style="width:'+mP+'%;background:'+color+';"></div></div>':'')+'<div>'+ph+'</div></div>';
   });
   el.innerHTML=html;
 }
-
 function renderSupRanking(){
   var el=document.getElementById('sup-panel-ranking'),tv=appData.tieneVenta;
-  var proms=getSupProms().sort(function(a,b){
-    if(tv){var pa=a[1].enviadas>0?a[1].validadas.length/a[1].enviadas:0,pb=b[1].enviadas>0?b[1].validadas.length/b[1].enviadas:0;return pb-pa;}
-    return (b[1].historial||0)-(a[1].historial||0);
-  });
+  var proms=getSupProms().sort(function(a,b){if(tv){var pa=a[1].enviadas>0?a[1].validadas.length/a[1].enviadas:0,pb=b[1].enviadas>0?b[1].validadas.length/b[1].enviadas:0;return pb-pa;}return (b[1].historial||0)-(a[1].historial||0);});
   var html=tv?'':'<div class="no-obj-note">Sin venta cargada — ranking por validaciones históricas</div>';
   proms.forEach(function(e,i){
     var n=e[0],d=e[1],rank=i+1,rc=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
-    var pct=tv&&d.enviadas>0?Math.round(d.validadas.length/d.enviadas*100):null;
-    var al=tv&&d.enviadas>0&&d.validadas.length===0;
-    var acum=d.historial+(tv?d.validadas.length:0);
-    var ipStr=d.objetivo>0?' · IP: '+Math.round(acum/d.objetivo*100)+'%':'';
-    var rh='';
-    if(d.objetivo){
-      var ritmo=Math.round(acum/Math.max(calcDia(appData.hoy),1)*10)/10,nec=Math.round(d.objetivo/31*10)/10;
-      rh=' · '+ritmo+'/'+nec+' <span style="color:'+(ritmo>=nec?'var(--green)':'var(--red)')+';">'+(ritmo>=nec?'✓':'✗')+'</span>';
-    }
-    var clickAttr=isAdmin?'onclick="showDashboard(\''+n.replace(/'/g,"\\'")+"',true)\"":'';
-    html+='<div class="ranking-card" '+clickAttr+'><div class="rank-num '+rc+'">'+rank+'</div><div class="rank-info"><div class="rank-name">'+n+'</div><div class="rank-detail">'+(tv?d.validadas.length+' val / '+d.enviadas+' env'+(pct!==null?' ('+pct+'%)':''):d.historial+' hist.')+ipStr+rh+'</div></div>'+(al?'<div class="rank-alert"><i class="ti ti-alert-triangle"></i></div>':'')+'</div>';
+    var pct=tv&&d.enviadas>0?Math.round(d.validadas.length/d.enviadas*100):null,al=tv&&d.enviadas>0&&d.validadas.length===0;
+    var acum=d.historial+(tv?d.validadas.length:0),ipStr=d.objetivo>0?' · IP: '+Math.round(acum/d.objetivo*100)+'%':'';
+    var rh='';if(d.objetivo){var ritmo=Math.round(acum/Math.max(calcDia(appData.hoy),1)*10)/10,nec=Math.round(d.objetivo/31*10)/10;rh=' · '+ritmo+'/'+nec+' <span style="color:'+(ritmo>=nec?'var(--green)':'var(--red)')+';">'+(ritmo>=nec?'✓':'✗')+'</span>';}
+    var click=isAdmin?'onclick="showDashboard(\''+n.replace(/'/g,"\\'")+"',true)\"":'';
+    html+='<div class="ranking-card" '+click+'><div class="rank-num '+rc+'">'+rank+'</div><div class="rank-info"><div class="rank-name">'+n+'</div><div class="rank-detail">'+(tv?d.validadas.length+' val / '+d.enviadas+' env'+(pct!==null?' ('+pct+'%)':''):d.historial+' hist.')+ipStr+rh+'</div></div>'+(al?'<div class="rank-alert"><i class="ti ti-alert-triangle"></i></div>':'')+'</div>';
   });
   el.innerHTML=html||'<div class="empty-state">Sin datos</div>';
 }
-
 function renderSupTendencia(){
   var el=document.getElementById('sup-panel-tendencia'),dias=appData.tendenciaDias,td=appData.tendenciaData;
   if(!dias.length){el.innerHTML='<div class="empty-state">Sin datos históricos</div>';return;}
-  var bars=dias.map(function(d){
-    var dat=td[d]||{validadas:0,enviadas:0},pct=dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0;
-    var color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
-    var isHoy=String(d)===String(appData.hoy),lbl=String(d).slice(6,8)+'/'+String(d).slice(4,6);
-    return '<div class="mini-bar"><div class="mini-bar-val">'+pct+'%</div><div class="mini-bar-fill" style="height:'+Math.max(pct,4)+'%;background:'+color+';'+(isHoy?'outline:2px solid var(--blue);':'')+'"></div><div class="mini-bar-lbl" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+lbl+'</div></div>';
-  }).join('');
+  var bars=dias.map(function(d){var dat=td[d]||{validadas:0,enviadas:0},pct=dat.enviadas>0?Math.round(dat.validadas/dat.enviadas*100):0,color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)',isHoy=String(d)===String(appData.hoy),lbl=String(d).slice(6,8)+'/'+String(d).slice(4,6);return '<div class="mini-bar"><div class="mini-bar-val">'+pct+'%</div><div class="mini-bar-fill" style="height:'+Math.max(pct,4)+'%;background:'+color+';'+(isHoy?'outline:2px solid var(--blue);':'')+'"></div><div class="mini-bar-lbl" style="'+(isHoy?'font-weight:700;color:var(--blue);':'')+'">'+lbl+'</div></div>';}).join('');
   el.innerHTML='<div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:10px;"><div style="font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Cobertura del equipo — últimos '+dias.length+' días</div><div class="mini-chart" style="height:80px;">'+bars+'</div></div><div style="font-size:11px;color:var(--text2);text-align:center;">% validadas / enviadas del día</div>';
 }
-
-// INIT
-window.onload=function(){
-  var saved=localStorage.getItem(LS_APP);
-  if(saved){try{appData=JSON.parse(saved);}catch(e){}}
-  showScreen('screen-login');
-};
+window.onload=function(){var saved=localStorage.getItem(LS_APP);if(saved){try{appData=JSON.parse(saved);}catch(e){}}showScreen('screen-login');};
 </script>
 </body>
 </html>
