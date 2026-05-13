@@ -355,21 +355,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div id="admin-viewing-badge" class="admin-badge" style="display:none;"><i class="ti ti-eye" style="font-size:12px;"></i> Vista admin</div>
     <div class="date-badge"><i class="ti ti-calendar" style="font-size:14px;"></i><span id="d-fecha"></span></div>
+    <!-- KPIs del mes -->
     <div class="kpi-header">
+      <div style="font-size:10px;font-weight:600;color:#B5D4F4;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Acumulado del mes</div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div>
-          <div class="kpi-main-num" id="d-pct">—</div>
-          <div class="kpi-main-lbl" id="d-pct-lbl">cobertura del día</div>
+          <div class="kpi-main-num" id="d-acum-pct">—</div>
+          <div class="kpi-main-lbl">cobertura acumulada</div>
         </div>
         <div style="text-align:right;">
-          <div style="color:#5DCAA5;font-size:22px;font-weight:700;" id="d-val-num">0</div>
-          <div style="color:#B5D4F4;font-size:11px;">validadas hoy</div>
+          <div style="color:#5DCAA5;font-size:22px;font-weight:700;" id="d-obj-pct">—</div>
+          <div style="color:#B5D4F4;font-size:11px;">objetivo</div>
         </div>
       </div>
-      <div class="kpi-row">
-        <div class="kpi-mini"><div class="kpi-mini-val" id="kpi-hist">0</div><div class="kpi-mini-lbl">Acum. mes</div></div>
-        <div class="kpi-mini"><div class="kpi-mini-val" id="kpi-obj-pct">—</div><div class="kpi-mini-lbl">Cob. acum. %</div></div>
-        <div class="kpi-mini"><div class="kpi-mini-val" id="kpi-ritmo">—</div><div class="kpi-mini-lbl">vs objetivo</div></div>
+      <div class="kpi-row" style="margin-top:10px;">
+        <div class="kpi-mini"><div class="kpi-mini-val" id="kpi-val-mes">0</div><div class="kpi-mini-lbl">Validadas mes</div></div>
+        <div class="kpi-mini"><div class="kpi-mini-val" id="kpi-env-mes">0</div><div class="kpi-mini-lbl">Enviadas mes</div></div>
+        <div class="kpi-mini"><div class="kpi-mini-val" id="kpi-avance">—</div><div class="kpi-mini-lbl">Avance obj.</div></div>
       </div>
     </div>
   </div>
@@ -377,17 +379,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="dash-body">
     <div id="sin-venta-banner" class="sin-venta-banner" style="display:none;">
       <i class="ti ti-clock"></i>
-      <p>Venta no cargada. Mostrando planificación y acumulado histórico.</p>
+      <p>Venta no cargada aún. Mostrando planificación del día y acumulado histórico.</p>
     </div>
 
-    <div id="priority-card" class="priority-card" style="display:none;">
-      <div class="priority-label"><i class="ti ti-star" style="font-size:12px;"></i>Tarea más importante del día</div>
-      <div class="priority-tarea" id="priority-nombre"></div>
-      <div class="priority-detail" id="priority-detail"></div>
-      <div class="priority-prog-wrap"><div class="priority-prog-fill" id="priority-fill" style="width:0%"></div></div>
-      <div class="priority-pct" id="priority-pct"></div>
+    <!-- KPIs del día (solo con venta) -->
+    <div id="kpis-dia-card" style="display:none;background:#fff;border-radius:16px;border:1px solid var(--border);padding:14px;margin-bottom:12px;">
+      <div class="section-hdr" style="margin-top:0;margin-bottom:10px;">Validación del día</div>
+      <div class="stats-3">
+        <div class="stat-card"><div class="stat-val val-green" id="d-s-val">0</div><div class="stat-lbl">Validadas</div></div>
+        <div class="stat-card"><div class="stat-val val-red" id="d-s-pend">0</div><div class="stat-lbl">Pendientes</div></div>
+        <div class="stat-card"><div class="stat-val val-gray" id="d-s-total">0</div><div class="stat-lbl">Enviadas</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px;">
+          <span>Cobertura del día</span><span id="d-pct-dia-lbl" style="font-weight:600;color:var(--text);">—</span>
+        </div>
+        <div style="background:var(--gray-light);border-radius:6px;height:8px;overflow:hidden;">
+          <div id="d-pct-dia-bar" style="height:100%;border-radius:6px;background:var(--green);width:0%;transition:width .8s;"></div>
+        </div>
+      </div>
     </div>
 
+    <!-- Gauge avance vs objetivo -->
     <div class="gauge-card" id="gauge-card" style="display:none;">
       <div class="gauge-title">Avance vs objetivo del mes</div>
       <div class="gauge-wrap">
@@ -403,23 +416,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
 
+    <!-- Tendencia personal -->
     <div class="tendencia-card" id="tendencia-personal-card" style="display:none;">
       <div class="tendencia-title">Mi tendencia — últimos días</div>
       <div class="mini-chart" id="mini-chart-personal"></div>
     </div>
 
-    <div class="stats-3" id="stats-dia" style="display:none;">
-      <div class="stat-card"><div class="stat-val val-green" id="d-s-val">0</div><div class="stat-lbl">Validadas hoy</div></div>
-      <div class="stat-card"><div class="stat-val val-red" id="d-s-pend">0</div><div class="stat-lbl">Pendientes</div></div>
-      <div class="stat-card"><div class="stat-val val-gray" id="d-s-total">0</div><div class="stat-lbl">Enviadas</div></div>
-    </div>
-    <div class="stats-2" id="stats-sin-venta">
-      <div class="stat-card"><div class="stat-val val-blue" id="d-sv-enviadas">0</div><div class="stat-lbl">Tareas hoy</div></div>
-      <div class="stat-card"><div class="stat-val val-green" id="d-sv-historial">0</div><div class="stat-lbl">Acum. mes</div></div>
+    <!-- Tareas agrupadas por SKU -->
+    <div id="tareas-agrupadas-card" style="display:none;">
+      <div class="section-hdr" style="margin-top:4px;">Mis tareas del día por SKU</div>
+      <div id="tareas-agrupadas-list"></div>
     </div>
 
+    <!-- Ranking de mesa -->
+    <div id="ranking-mesa-card" style="display:none;background:#fff;border-radius:16px;border:1px solid var(--border);padding:14px;margin-bottom:12px;">
+      <div class="section-hdr" style="margin-top:0;margin-bottom:10px;">Ranking de mi mesa</div>
+      <div id="ranking-mesa-list"></div>
+    </div>
+
+    <!-- Tareas validadas hoy -->
     <div class="section-hdr" id="lbl-val-hdr" style="display:none;">Tareas validadas hoy</div>
     <div id="list-validadas"></div>
+
+    <!-- Pendientes / planificadas -->
     <div class="pendientes-toggle" onclick="togglePendientes()">
       <span id="lbl-pend-hdr">Tareas del día</span>
       <span class="toggle-btn" id="toggle-lbl">Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i></span>
@@ -478,6 +497,22 @@ function fmtFecha(d){var s=String(d);return s.slice(6,8)+'/'+s.slice(4,6)+'/'+s.
 function pctColor(p){return p>=80?'pill-green':p>=50?'pill-amber':'pill-red';}
 function mesaColor(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
 function calcDia(hoy){return parseInt(String(hoy).slice(6,8))||1;}
+// Normaliza nombres: quita tildes, reemplaza Ñ->N, encodings rotos -> mayúsculas limpias
+// Permite cruzar "Nuñez" con "Nunez", "Nu?ez", "NUÃ'EZ", etc.
+function normNombre(s){
+  if(!s)return '';
+  return String(s).toUpperCase().trim()
+    .replace(/Ã'/g,'N').replace(/Ã'/g,'N') // encoding roto de Ñ
+    .replace(/[ÁÀÄÂÃÅ]/g,'A').replace(/[ÉÈËÊ]/g,'E')
+    .replace(/[ÍÌÏÎ]/g,'I').replace(/[ÓÒÖÔÕØ]/g,'O')
+    .replace(/[ÚÙÜÛ]/g,'U').replace(/Ñ/g,'N').replace(/Ç/g,'C')
+    .replace(/[^A-Z0-9 ]/g,'');
+}
+function buildNormMap(keys){
+  var m={};
+  keys.forEach(function(k){m[normNombre(k)]=k;});
+  return m;
+}
 
 // Extraer código PDV: últimos 5 dígitos de cliente_id (como número, sin ceros a la izquierda)
 function extractPdv(clienteId){
@@ -511,7 +546,9 @@ function dniLogin(){
     return;
   }
   var found=null;
-  Object.keys(appData.promotores).forEach(function(n){if(String(appData.promotores[n].dni)===dni)found=n;});
+  Object.keys(appData.promotores).forEach(function(n){
+    if(String(appData.promotores[n].dni)===dni)found=n;
+  });
   if(!found){
     document.getElementById('dni-error').textContent='DNI no encontrado. Verificá el número o contactá a tu referente.';
     document.getElementById('dni-error').style.display='block';
@@ -634,25 +671,38 @@ function onFile(input,key){
 }
 
 // PROCESAR
+// Cede el hilo al navegador para no congelarlo
+function yieldToUI(){return new Promise(function(r){setTimeout(r,0);});}
+
+function setStatus(msg){document.getElementById('upload-status').textContent=msg;}
+
 async function procesar(){
   var btn=document.getElementById('btn-procesar');
-  btn.textContent='Procesando...';btn.disabled=true;
+  btn.disabled=true;
   try{
-    await _procesarInterno();
+    await _procesarInterno(btn);
   }catch(err){
     btn.innerHTML='<i class="ti ti-alert-circle" style="vertical-align:-2px;margin-right:6px;"></i>Error al procesar';
     btn.disabled=false;
-    document.getElementById('upload-status').textContent='Error: '+(err.message||err);
+    setStatus('Error: '+(err.message||String(err)));
     console.error('Error al procesar:',err);
   }
 }
 
-async function _procesarInterno(){
-  var btn=document.getElementById('btn-procesar');
+async function _procesarInterno(btn){
+  btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Leyendo archivos...';
+  setStatus('Leyendo archivos, esto puede tardar unos segundos...');
+  await yieldToUI();
+
   var rawT=await readXlsx(files.tareas);
+  await yieldToUI();
+  setStatus('Archivos leídos · '+rawT.length+' filas de tareas · procesando...');
+  await yieldToUI();
+
   var rawS=files.skus?await readXlsx(files.skus):JSON.parse(localStorage.getItem(LS_SKUS)||'[]');
   var rawO=files.obj?await readXlsx(files.obj):JSON.parse(localStorage.getItem(LS_OBJ)||'[]');
   var rawV=files.venta?await readXlsx(files.venta):null;
+  await yieldToUI();
 
   if(files.skus){localStorage.setItem(LS_SKUS,JSON.stringify(rawS));localStorage.setItem(LS_SKUS+'_m',JSON.stringify({name:files.skus.name}));}
   if(files.obj){localStorage.setItem(LS_OBJ,JSON.stringify(rawO));localStorage.setItem(LS_OBJ+'_m',JSON.stringify({name:files.obj.name}));}
@@ -660,43 +710,24 @@ async function _procesarInterno(){
   var tv=!!rawV;
 
   // Día más reciente
+  btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Calculando días...';
+  await yieldToUI();
   var diasSet={},dias=[];
   rawT.forEach(function(r){if(r.dia&&!diasSet[r.dia]){diasSet[r.dia]=true;dias.push(r.dia);}});
   dias.sort();var hoy=dias[dias.length-1];
+  setStatus('Día detectado: '+fmtFecha(hoy)+' · procesando historial...');
+  await yieldToUI();
 
-  // Historial (días anteriores, solo PALACIO + VALUE_CREATION con validadas > 0)
-  var historial={};
-  var totalTareasMes={}; // total de tareas enviadas en el mes por promotor (para calcular % cobertura)
-  rawT.forEach(function(r){
-    if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
-    if(r.PILAR!=='VALUE_CREATION')return;
-    var p=r.PROMOTOR||'SIN ASIGNAR';
-    totalTareasMes[p]=(totalTareasMes[p]||0)+1; // contar TODAS las tareas del mes
-    if(String(r.dia)===String(hoy))return; // las de hoy se procesan aparte
-    if(Number(r.TAREAS_VALIDADAS)>0){historial[p]=(historial[p]||0)+1;}
-  });
-
-  // Tareas de hoy: PALACIO + VALUE_CREATION + sin validar
-  var tareasHoy=rawT.filter(function(r){
-    return r.desc_ddc_wh&&r.desc_ddc_wh.toUpperCase().includes('PALACIO')&&
-      r.PILAR==='VALUE_CREATION'&&String(r.dia)===String(hoy)&&
-      Number(r.TAREAS_VALIDADAS)===0;
-  });
-  tareasHoy.forEach(function(r){
-    // PDV: últimos 5 dígitos del cliente_id
-    r._pdv=extractPdv(r.cliente_id);
-    r._tu=String(r.TAREA||'').toUpperCase();
-  });
-
-  // SKU map: full_description -> [sku_ids]
+  // SKU map
   var skuMap={};
   rawS.forEach(function(r){
     var k=String(r.full_description||'').toUpperCase();
     if(!skuMap[k])skuMap[k]=[];
     skuMap[k].push(normSku(r.sku_id));
   });
+  await yieldToUI();
 
-  // Venta map: Cod. Cliente (número) -> Set de códigos SKU
+  // Venta map
   var ventaPdv={},pdvNombre={};
   if(rawV){
     rawV.forEach(function(r){
@@ -707,116 +738,209 @@ async function _procesarInterno(){
       if(!pdvNombre[cod])pdvNombre[cod]=String(r['Descripción']||'');
     });
   }
+  await yieldToUI();
 
-  // Objetivos: columna OBJETIVO como decimal (0.45 = 45%) o entero (45 = 45%)
+  // Objetivos: OBJETIVO = % de IP (0.55->55 o 55->55)
+  // Usamos normNombre para cruzar aunque haya Ñ/tildes rotas en cualquiera de los archivos
   var objMap={},mesaMap={},dniMap={},rolMap={};
   rawO.forEach(function(r){
     var p=String(r.Nombre||r.PROMOTOR||r.nombre||r.promotor||'').trim();
     var dni=String(r.DNI||r.dni||'').trim();
     if(!p&&!dni)return;
     var objRaw=Number(r.OBJETIVO||r.OBJETIVO_MES||r.objetivo||r.objetivo_mes||0)||0;
-    // Normalizar a porcentaje entre 0 y 100
-    // Si viene como decimal (0.45) -> 45; si ya es entero (45) -> 45
     var objPct=objRaw>0&&objRaw<=1?Math.round(objRaw*100):Math.round(objRaw);
     if(p){
-      objMap[p]=objPct; // guardado como % entero (ej: 45)
+      objMap[p]=objPct;
       mesaMap[p]=String(r.Mesa||r.MESA||r.mesa||'').trim();
       rolMap[p]=String(r.ROL||r.rol||'PROMOTOR').trim().toUpperCase();
     }
     if(dni&&p)dniMap[dni]=p;
   });
+  // Mapas normalizados: normNombre(nombre) -> nombre canónico del archivo de objetivos
+  var objNormMap=buildNormMap(Object.keys(objMap));
+  var dniNormMap={}; // normNombre(nombrePromotor) -> dni
+  Object.keys(dniMap).forEach(function(dni){dniNormMap[normNombre(dniMap[dni])]=dni;});
+  // Busca datos del objetivo para un promotor, tolerando diferencias de Ñ/tildes
+  function getObjData(nombrePromotor){
+    var norm=normNombre(nombrePromotor);
+    var canon=objNormMap[norm];
+    return {
+      objetivo: canon?(objMap[canon]||null):null,
+      mesa: canon?(mesaMap[canon]||null):null,
+      rol: canon?(rolMap[canon]||'PROMOTOR'):'PROMOTOR',
+      dni: dniNormMap[norm]||''
+    };
+  }
+  // dniMap inverso normalizado para login
+  var dniLoginMap={}; // dni -> nombre canónico en promotores (resuelto al construir promotores)
+  Object.keys(dniMap).forEach(function(dni){dniLoginMap[dni]=dniMap[dni];});
+  await yieldToUI();
 
-  // Construir promotores
-  var promotores={},tareasEnvProm={};
-  tareasHoy.forEach(function(r){
-    var p=r.PROMOTOR||'SIN ASIGNAR';
-    if(!promotores[p]){
-      var dniP='';
-      Object.keys(dniMap).forEach(function(d){if(dniMap[d]===p)dniP=d;});
-      promotores[p]={
-        enviadas:0,validadas:[],pendientes:[],
-        historial:historial[p]||0,
-        objetivo:objMap[p]||null,
-        mesa:mesaMap[p]||null,
-        rol:rolMap[p]||'PROMOTOR',
-        dni:dniP,
-        totalTareasEnviadas:totalTareasMes[p]||0,
-        tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0
-      };
-    }
-    promotores[p].enviadas++;
-    if(!tareasEnvProm[p])tareasEnvProm[p]={};
-    tareasEnvProm[p][r._tu]=(tareasEnvProm[p][r._tu]||0)+1;
+  // Historial + totalTareasMes
+  // Enviadas mes = filas con PILAR=VALUE_CREATION, PALACIO, TAREAS_ENVIADAS=1
+  // Validadas mes (historial) = días anteriores con TAREAS_VALIDADAS>0
+  btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Procesando historial...';
+  var historial={},totalTareasMes={};
+  // Mapa para normalizar nombres de promotores del archivo de tareas
+  var CHUNK=2000;
+  for(var ci=0;ci<rawT.length;ci+=CHUNK){
+    var chunk=rawT.slice(ci,ci+CHUNK);
+    chunk.forEach(function(r){
+      if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
+      if(r.PILAR!=='VALUE_CREATION')return;
+      if(Number(r.TAREAS_ENVIADAS)!==1)return; // solo filas enviadas
+      var p=r.PROMOTOR||'SIN ASIGNAR';
+      totalTareasMes[p]=(totalTareasMes[p]||0)+1;
+      if(String(r.dia)===String(hoy))return;
+      if(Number(r.TAREAS_VALIDADAS)>0){historial[p]=(historial[p]||0)+1;}
+    });
+    setStatus('Historial: '+Math.min(ci+CHUNK,rawT.length)+' / '+rawT.length+' filas...');
+    await yieldToUI();
+  }
 
-    if(tv){
-      var skus=skuMap[r._tu];
-      if(skus&&r._pdv){
-        var vendidos=ventaPdv[r._pdv]||{};
-        var match=null;
-        for(var i=0;i<skus.length;i++){if(vendidos[skus[i]]){match=skus[i];break;}}
-        if(match){
-          promotores[p].validadas.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',sku:match,tareaUp:r._tu});
-          return;
-        }
-      }
-      promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',tareaUp:r._tu});
-    } else {
-      promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:'',tareaUp:r._tu});
-    }
+  // Tareas de hoy
+  btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Procesando tareas de hoy...';
+  var tareasHoy=[];
+  rawT.forEach(function(r){
+    if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
+    if(r.PILAR!=='VALUE_CREATION')return;
+    if(String(r.dia)!==String(hoy))return;
+    if(Number(r.TAREAS_VALIDADAS)!==0)return;
+    r._pdv=extractPdv(r.cliente_id);
+    r._tu=String(r.TAREA||'').toUpperCase();
+    tareasHoy.push(r);
   });
+  setStatus('Tareas de hoy: '+tareasHoy.length+' registros · cruzando datos...');
+  await yieldToUI();
 
-  // Tarea principal (más enviadas)
+  // Construir promotores — en chunks
+  var promotores={},tareasEnvProm={},tareasAgrupadasProm={};
+  for(var ci2=0;ci2<tareasHoy.length;ci2+=CHUNK){
+    var chunk2=tareasHoy.slice(ci2,ci2+CHUNK);
+    chunk2.forEach(function(r){
+      var p=r.PROMOTOR||'SIN ASIGNAR';
+      if(!promotores[p]){
+        var od=getObjData(p);
+        promotores[p]={enviadas:0,validadas:[],pendientes:[],
+          historial:historial[p]||0,
+          objetivo:od.objetivo,mesa:od.mesa,rol:od.rol,dni:od.dni,
+          totalTareasEnviadas:totalTareasMes[p]||0,
+          tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0};
+      }
+      promotores[p].enviadas++;
+      if(!tareasEnvProm[p])tareasEnvProm[p]={};
+      tareasEnvProm[p][r._tu]=(tareasEnvProm[p][r._tu]||0)+1;
+      // Guardar PDVs por tarea para panel detallado del promotor
+      if(!tareasAgrupadasProm[p])tareasAgrupadasProm[p]={};
+      if(!tareasAgrupadasProm[p][r._tu])tareasAgrupadasProm[p][r._tu]=[];
+      tareasAgrupadasProm[p][r._tu].push({pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',tarea:r.TAREA});
+      if(tv){
+        var skus=skuMap[r._tu];
+        if(skus&&r._pdv){
+          var vendidos=ventaPdv[r._pdv]||{};
+          var match=null;
+          for(var i=0;i<skus.length;i++){if(vendidos[skus[i]]){match=skus[i];break;}}
+          if(match){promotores[p].validadas.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',sku:match,tareaUp:r._tu});return;}
+        }
+        promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:pdvNombre[r._pdv]||'',tareaUp:r._tu});
+      } else {
+        promotores[p].pendientes.push({tarea:r.TAREA,pdv:r._pdv,nombre:'',tareaUp:r._tu});
+      }
+    });
+    setStatus('Cruzando: '+Math.min(ci2+CHUNK,tareasHoy.length)+' / '+tareasHoy.length+' tareas...');
+    await yieldToUI();
+  }
+
+  // Tarea principal y tareas agrupadas por SKU
   Object.keys(promotores).forEach(function(p){
     var counts=tareasEnvProm[p]||{},maxT=null,maxC=0;
     Object.keys(counts).forEach(function(t){if(counts[t]>maxC){maxC=counts[t];maxT=t;}});
     promotores[p].tareaPrincipal=maxT;
     promotores[p].tareaPrincipalEnv=maxC;
-    if(maxT&&tv){
-      promotores[p].tareaPrincipalVal=promotores[p].validadas.filter(function(v){return v.tareaUp===maxT;}).length;
-    }
+    if(maxT&&tv){promotores[p].tareaPrincipalVal=promotores[p].validadas.filter(function(v){return v.tareaUp===maxT;}).length;}
+    // Tareas agrupadas: array [{tarea, enviadas, validadas, pdvs:[]}] ordenado por enviadas desc
+    var ag=tareasAgrupadasProm[p]||{};
+    promotores[p].tareasAgrupadas=Object.keys(ag).map(function(tu){
+      var pdvs=ag[tu];
+      var valCount=tv?promotores[p].validadas.filter(function(v){return v.tareaUp===tu;}).length:0;
+      return {tarea:pdvs[0].tarea,tareaUp:tu,enviadas:pdvs.length,validadas:valCount,pdvs:pdvs};
+    }).sort(function(a,b){return b.enviadas-a.enviadas;});
   });
+  await yieldToUI();
 
   // Agregar promotores del archivo de objetivos sin tareas hoy
-  Object.keys(dniMap).forEach(function(dni){
-    var p=dniMap[dni];
-    if(!promotores[p]){
-      promotores[p]={enviadas:0,validadas:[],pendientes:[],historial:historial[p]||0,objetivo:objMap[p]||null,mesa:mesaMap[p]||null,rol:rolMap[p]||'PROMOTOR',dni:dni,totalTareasEnviadas:totalTareasMes[p]||0,tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0};
+  // Usar normNombre para evitar duplicados por Ñ
+  Object.keys(dniLoginMap).forEach(function(dni){
+    var pCanon=dniLoginMap[dni]; // nombre como viene en archivo de objetivos
+    // Buscar si ya existe en promotores (puede estar con nombre diferente por Ñ)
+    var normP=normNombre(pCanon);
+    var existente=null;
+    Object.keys(promotores).forEach(function(k){if(normNombre(k)===normP)existente=k;});
+    if(!existente){
+      var od=getObjData(pCanon);
+      promotores[pCanon]={enviadas:0,validadas:[],pendientes:[],historial:historial[pCanon]||0,
+        objetivo:od.objetivo,mesa:od.mesa,rol:od.rol,dni:dni,
+        totalTareasEnviadas:totalTareasMes[pCanon]||0,
+        tareaPrincipal:null,tareaPrincipalEnv:0,tareaPrincipalVal:0,tareasAgrupadas:[]};
+    } else {
+      if(!promotores[existente].dni)promotores[existente].dni=dni;
     }
-    if(!promotores[p].dni)promotores[p].dni=dni;
   });
+  await yieldToUI();
 
-  // Tendencia global del equipo (últimos 7 días)
+  // Tendencia global
+  btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Calculando tendencias...';
   var tendenciaData={};
-  rawT.forEach(function(r){
-    if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
-    if(r.PILAR!=='VALUE_CREATION')return;
-    var d=String(r.dia);
-    if(!tendenciaData[d])tendenciaData[d]={validadas:0,enviadas:0};
-    tendenciaData[d].enviadas++;
-    if(Number(r.TAREAS_VALIDADAS)>0)tendenciaData[d].validadas++;
-  });
+  for(var ci3=0;ci3<rawT.length;ci3+=CHUNK){
+    rawT.slice(ci3,ci3+CHUNK).forEach(function(r){
+      if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
+      if(r.PILAR!=='VALUE_CREATION')return;
+      var d=String(r.dia);
+      if(!tendenciaData[d])tendenciaData[d]={validadas:0,enviadas:0};
+      tendenciaData[d].enviadas++;
+      if(Number(r.TAREAS_VALIDADAS)>0)tendenciaData[d].validadas++;
+    });
+    await yieldToUI();
+  }
   var tendenciaDias=Object.keys(tendenciaData).sort().slice(-7);
 
-  // Tendencia personal por promotor
+  // Tendencia personal
   var tendenciaPersonal={};
-  rawT.forEach(function(r){
-    if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
-    if(r.PILAR!=='VALUE_CREATION')return;
-    var p=r.PROMOTOR||'SIN ASIGNAR',d=String(r.dia);
-    if(!tendenciaPersonal[p])tendenciaPersonal[p]={};
-    if(!tendenciaPersonal[p][d])tendenciaPersonal[p][d]={validadas:0,enviadas:0};
-    tendenciaPersonal[p][d].enviadas++;
-    if(Number(r.TAREAS_VALIDADAS)>0)tendenciaPersonal[p][d].validadas++;
-  });
+  for(var ci4=0;ci4<rawT.length;ci4+=CHUNK){
+    rawT.slice(ci4,ci4+CHUNK).forEach(function(r){
+      if(!r.desc_ddc_wh||!r.desc_ddc_wh.toUpperCase().includes('PALACIO'))return;
+      if(r.PILAR!=='VALUE_CREATION')return;
+      var p=r.PROMOTOR||'SIN ASIGNAR',d=String(r.dia);
+      if(!tendenciaPersonal[p])tendenciaPersonal[p]={};
+      if(!tendenciaPersonal[p][d])tendenciaPersonal[p][d]={validadas:0,enviadas:0};
+      tendenciaPersonal[p][d].enviadas++;
+      if(Number(r.TAREAS_VALIDADAS)>0)tendenciaPersonal[p][d].validadas++;
+    });
+    await yieldToUI();
+  }
+
+  // Guardar
+  btn.innerHTML='<i class="ti ti-loader" style="vertical-align:-2px;margin-right:6px;"></i>Guardando datos...';
+  setStatus('Guardando en el navegador...');
+  await yieldToUI();
 
   appData={hoy:hoy,promotores:promotores,tieneVenta:tv,tendenciaData:tendenciaData,tendenciaDias:tendenciaDias,tendenciaPersonal:tendenciaPersonal};
-  localStorage.setItem(LS_APP,JSON.stringify(appData));
+  try{
+    localStorage.setItem(LS_APP,JSON.stringify(appData));
+  }catch(e){
+    // localStorage lleno (>5MB) — guardar sin historial de tendencia personal para achicar
+    var appDataLight=Object.assign({},appData,{tendenciaPersonal:{}});
+    localStorage.setItem(LS_APP,JSON.stringify(appDataLight));
+    appData=appDataLight;
+    console.warn('localStorage lleno, tendencia personal omitida');
+  }
 
+  var nProms=Object.keys(promotores).filter(function(p){return promotores[p].rol!=='SUPERVISOR';}).length;
   document.getElementById('admin-ver-card').style.display='block';
   btn.innerHTML='<i class="ti ti-check" style="vertical-align:-2px;margin-right:6px;"></i>Publicado correctamente';
   document.getElementById('admin-fecha-sub').textContent='Último proceso: '+fmtFecha(hoy);
-  document.getElementById('upload-status').textContent='Datos publicados correctamente.';
-  setTimeout(function(){btn.innerHTML='<i class="ti ti-player-play" style="vertical-align:-2px;margin-right:6px;"></i>Procesar y publicar';btn.disabled=false;},3000);
+  setStatus('✓ Listo · '+nProms+' promotores · '+(tv?'con venta':'sin venta'));
+  setTimeout(function(){btn.innerHTML='<i class="ti ti-player-play" style="vertical-align:-2px;margin-right:6px;"></i>Procesar y publicar';btn.disabled=false;},4000);
 }
 
 // GAUGE
@@ -858,80 +982,50 @@ function showDashboard(nombre,fromAdmin){
   document.getElementById('admin-viewing-badge').style.display=fromAdmin?'inline-flex':'none';
   document.getElementById('dash-back-label').textContent=fromAdmin?'Volver a vistas':'Cerrar sesión';
 
-  var tv=appData.tieneVenta,hist=data.historial||0,obj=data.objetivo; // obj = % objetivo (ej: 45)
-  var acum=hist+(tv?data.validadas.length:0);
-  var diaActual=calcDia(appData.hoy);
-  // totalMes: total de tareas enviadas en el mes (para calcular % de cobertura)
+  var tv=appData.tieneVenta;
+  var obj=data.objetivo; // % objetivo (ej: 55)
   var totalMes=data.totalTareasEnviadas||0;
-  // acumPct: % de cobertura acumulada en el mes
-  var acumPct=totalMes>0?Math.round(acum/totalMes*100):null;
+  var validadasMes=(data.historial||0)+(tv?data.validadas.length:0);
+  // Cobertura acumulada % = validadas mes / enviadas mes * 100
+  var acumPct=totalMes>0?Math.round(validadasMes/totalMes*100):null;
+  // Avance vs objetivo = acumPct / obj * 100
+  var avance=obj&&acumPct!==null?Math.round(acumPct/obj*100):null;
 
   document.getElementById('sin-venta-banner').style.display=tv?'none':'flex';
 
-  // KPI header
+  // KPIs del mes en el header
+  document.getElementById('d-acum-pct').textContent=acumPct!==null?acumPct+'%':'—';
+  document.getElementById('d-acum-pct').style.color=obj?(acumPct>=obj?'#5DCAA5':acumPct>=obj*0.7?'#F0C040':'#FF7070'):'#fff';
+  document.getElementById('d-obj-pct').textContent=obj?obj+'%':'—';
+  document.getElementById('kpi-val-mes').textContent=validadasMes;
+  document.getElementById('kpi-env-mes').textContent=totalMes||'—';
+  document.getElementById('kpi-avance').textContent=avance!==null?avance+'%':'—';
+
+  // KPIs del día
   if(tv){
-    var pctDia=data.enviadas>0?Math.round(data.validadas.length/data.enviadas*1000)/10:0;
-    document.getElementById('d-pct').textContent=pctDia+'%';
-    document.getElementById('d-pct-lbl').textContent='cobertura del día';
-    document.getElementById('d-val-num').textContent=data.validadas.length;
+    var pctDia=data.enviadas>0?Math.round(data.validadas.length/data.enviadas*100):0;
+    document.getElementById('kpis-dia-card').style.display='block';
+    document.getElementById('d-s-val').textContent=data.validadas.length;
+    document.getElementById('d-s-pend').textContent=data.pendientes.length;
+    document.getElementById('d-s-total').textContent=data.enviadas;
+    document.getElementById('d-pct-dia-lbl').textContent=pctDia+'%';
+    document.getElementById('d-pct-dia-bar').style.width=pctDia+'%';
+    document.getElementById('d-pct-dia-bar').style.background=pctDia>=80?'var(--green)':pctDia>=50?'var(--amber)':'var(--red)';
   } else {
-    document.getElementById('d-pct').textContent='—';
-    document.getElementById('d-pct-lbl').textContent='sin venta cargada';
-    document.getElementById('d-val-num').textContent='0';
-  }
-  document.getElementById('kpi-hist').textContent=acum;
-  if(obj){
-    // obj es el % objetivo (ej: 45). Mostramos qué % del objetivo ya cumplió
-    if(acumPct!==null){
-      // Avance: acumPct / obj * 100 = qué tanto del objetivo logró
-      var ipVal=Math.round(acumPct/obj*100);
-      document.getElementById('kpi-obj-pct').textContent=acumPct+'%';
-      document.getElementById('kpi-obj-pct').title='Objetivo: '+obj+'% · Avance: '+ipVal+'%';
-    } else {
-      document.getElementById('kpi-obj-pct').textContent='Obj: '+obj+'%';
-    }
-    // Ritmo: comparar cobertura diaria promedio vs necesaria
-    var ritmoNec=obj/31,ritmoReal=acumPct!==null?acumPct/Math.max(diaActual,1):null;
-    if(ritmoReal!==null){
-      var ritmoPct=Math.round(ritmoReal/ritmoNec*100);
-      document.getElementById('kpi-ritmo').textContent=(ritmoPct>=100?'✓ ':'')+ritmoPct+'%';
-    } else {
-      document.getElementById('kpi-ritmo').textContent='—';
-    }
-  } else {
-    document.getElementById('kpi-obj-pct').textContent='—';
-    document.getElementById('kpi-ritmo').textContent='—';
+    document.getElementById('kpis-dia-card').style.display='none';
   }
 
-  // Tarea principal
-  if(data.tareaPrincipal){
-    document.getElementById('priority-card').style.display='block';
-    var tn=data.tareaPrincipal.charAt(0)+data.tareaPrincipal.slice(1).toLowerCase();
-    document.getElementById('priority-nombre').textContent=tn;
-    var pv=data.tareaPrincipalVal||0,pe=data.tareaPrincipalEnv||0;
-    document.getElementById('priority-detail').textContent=tv?(pv+' de '+pe+' PDVs validados'):(pe+' PDVs asignados hoy');
-    var pp=pe>0?Math.round(pv/pe*100):0;
-    document.getElementById('priority-fill').style.width=pp+'%';
-    document.getElementById('priority-pct').textContent=pp+'% de avance en esta tarea';
-  } else document.getElementById('priority-card').style.display='none';
-
-  // Gauge: obj = % objetivo mensual, acumPct = % de cobertura logrado en el mes
-  if(obj){
+  // Gauge avance vs objetivo
+  if(obj&&acumPct!==null){
     document.getElementById('gauge-card').style.display='block';
-    var displayPct=acumPct!==null?acumPct:0;
-    // El gauge muestra acumPct vs obj%: llenado = acumPct/obj*100 (capped 100)
-    var gaugeFill=obj>0?Math.round(displayPct/obj*100):0;
-    setGauge(Math.min(gaugeFill,100));
-    document.getElementById('gauge-pct-text').textContent=displayPct+'%';
-    document.getElementById('gauge-pct-text').style.color=displayPct>=obj?'var(--green)':displayPct>=obj*0.7?'var(--amber)':'var(--red)';
-    document.getElementById('gauge-sub').textContent='Cobertura: '+displayPct+'% · Objetivo: '+obj+'%'+(acumPct!==null?' ('+acum+' validadas / '+totalMes+' enviadas en el mes)':'');
+    var gaugeFill=Math.min(avance,100);
+    setGauge(gaugeFill);
+    document.getElementById('gauge-pct-text').textContent=avance+'%';
+    document.getElementById('gauge-pct-text').style.color=avance>=100?'var(--green)':avance>=70?'var(--amber)':'var(--red)';
+    document.getElementById('gauge-sub').textContent='Cobertura: '+acumPct+'% de objetivo: '+obj+'% · '+validadasMes+'/'+totalMes+' tareas';
     var badge=document.getElementById('gauge-ritmo-badge');
-    if(displayPct>=obj){badge.className='gauge-ritmo ritmo-ok';badge.textContent='✓ Objetivo cumplido';}
-    else{
-      var faltaPct=Math.max(obj-displayPct,0);
-      badge.className='gauge-ritmo ritmo-warn';
-      badge.textContent='Falta '+faltaPct+'% para el objetivo · '+(31-diaActual)+' días restantes';
-    }
+    if(avance>=100){badge.className='gauge-ritmo ritmo-ok';badge.textContent='✓ Objetivo cumplido';}
+    else{badge.className='gauge-ritmo ritmo-warn';badge.textContent='Falta '+(obj-acumPct)+'pp · llevar a '+obj+'% de cobertura';}
   } else {
     document.getElementById('gauge-card').style.display='none';
   }
@@ -940,25 +1034,52 @@ function showDashboard(nombre,fromAdmin){
   var tendPers=appData.tendenciaPersonal&&appData.tendenciaPersonal[nombre];
   if(tendPers){
     var diasP=Object.keys(tendPers).sort().slice(-7);
-    if(diasP.length>0){renderMiniChart('mini-chart-personal',diasP,tendPers,appData.hoy);}
+    if(diasP.length>0){document.getElementById('tendencia-personal-card').style.display='block';renderMiniChart('mini-chart-personal',diasP,tendPers,appData.hoy);}
     else document.getElementById('tendencia-personal-card').style.display='none';
   } else document.getElementById('tendencia-personal-card').style.display='none';
 
-  // Stats
-  if(tv){
-    document.getElementById('stats-dia').style.display='grid';document.getElementById('stats-sin-venta').style.display='none';
-    document.getElementById('d-s-val').textContent=data.validadas.length;
-    document.getElementById('d-s-pend').textContent=data.pendientes.length;
-    document.getElementById('d-s-total').textContent=data.enviadas;
-    document.getElementById('lbl-val-hdr').style.display='block';
+  // Tareas agrupadas por SKU con lista de clientes
+  var ag=data.tareasAgrupadas||[];
+  if(ag.length>0){
+    document.getElementById('tareas-agrupadas-card').style.display='block';
+    var agEl=document.getElementById('tareas-agrupadas-list');agEl.innerHTML='';
+    ag.forEach(function(t){
+      var valPct=t.enviadas>0?Math.round(t.validadas/t.enviadas*100):0;
+      var colorCls=tv?(valPct>=80?'ic-green':valPct>=50?'ic-amber':'ic-blue'):'ic-blue';
+      var card=document.createElement('div');
+      card.style.cssText='background:#fff;border-radius:14px;border:1px solid var(--border);margin-bottom:8px;overflow:hidden;';
+      var header='<div style="padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;" onclick="toggleTareaGrupo(this)">'
+        +'<div class="task-ic '+colorCls+'"><i class="ti ti-'+(tv?'chart-bar':'calendar-event')+'"></i></div>'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div class="task-name">'+t.tarea+'</div>'
+        +'<div class="task-pdv">'+t.enviadas+' PDVs asignados'+(tv?' · '+t.validadas+' validados ('+valPct+'%)':'')+'</div>'
+        +(tv?'<div style="margin-top:5px;background:var(--gray-light);border-radius:4px;height:5px;overflow:hidden;"><div style="height:100%;border-radius:4px;background:'+(valPct>=80?'var(--green)':valPct>=50?'var(--amber)':'var(--red)')+ ';width:'+valPct+'%;"></div></div>':'')
+        +'</div>'
+        +'<i class="ti ti-chevron-down" style="color:var(--gray);font-size:16px;transition:transform .2s;"></i>'
+        +'</div>';
+      var pdvRows=t.pdvs.map(function(p){
+        var esVal=tv&&data.validadas.some(function(v){return v.pdv===p.pdv&&v.tareaUp===t.tareaUp;});
+        return '<div style="padding:8px 14px 8px 52px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">'
+          +'<i class="ti ti-'+(esVal?'circle-check':'circle-x')+'" style="color:'+(esVal?'var(--green)':'var(--gray)')+';font-size:16px;flex-shrink:0;"></i>'
+          +'<div style="flex:1;min-width:0;">'
+          +'<div style="font-size:12px;font-weight:500;color:var(--text);">'+(p.nombre||'PDV '+p.pdv)+'</div>'
+          +'<div style="font-size:11px;color:var(--text2);">Cód. '+p.pdv+'</div>'
+          +'</div>'
+          +(esVal?'<span class="task-badge tb-green">Validada</span>':'')
+          +'</div>';
+      }).join('');
+      card.innerHTML=header+'<div class="pdv-group-list" style="display:none;">'+pdvRows+'</div>';
+      agEl.appendChild(card);
+    });
   } else {
-    document.getElementById('stats-dia').style.display='none';document.getElementById('stats-sin-venta').style.display='grid';
-    document.getElementById('d-sv-enviadas').textContent=data.enviadas;
-    document.getElementById('d-sv-historial').textContent=hist;
-    document.getElementById('lbl-val-hdr').style.display='none';
+    document.getElementById('tareas-agrupadas-card').style.display='none';
   }
 
-  // Tareas validadas
+  // Ranking de mesa
+  renderRankingMesa(nombre,data.mesa,tv,acumPct);
+
+  // Tareas validadas hoy
+  document.getElementById('lbl-val-hdr').style.display=tv?'block':'none';
   var lv=document.getElementById('list-validadas');lv.innerHTML='';
   if(tv){
     if(!data.validadas.length)lv.innerHTML='<div class="empty-state"><i class="ti ti-mood-sad" style="font-size:24px;display:block;margin-bottom:6px;"></i>Aún no hay tareas validadas</div>';
@@ -984,6 +1105,42 @@ function showDashboard(nombre,fromAdmin){
   if(data.pendientes.length>30){var mm=document.createElement('div');mm.style.cssText='text-align:center;padding:10px;font-size:13px;color:var(--text2);';mm.textContent='... y '+(data.pendientes.length-30)+' tareas más';lp.appendChild(mm);}
   document.getElementById('toggle-lbl').innerHTML='Ver todas <i class="ti ti-chevron-down" style="vertical-align:-2px;"></i>';
   lp.classList.add('hidden-list');
+}
+
+function toggleTareaGrupo(header){
+  var list=header.parentElement.querySelector('.pdv-group-list');
+  var icon=header.querySelector('.ti-chevron-down,.ti-chevron-up');
+  var open=list.style.display==='none';
+  list.style.display=open?'block':'none';
+  if(icon){icon.className='ti ti-chevron-'+(open?'up':'down');icon.style.transform='';}
+}
+
+function renderRankingMesa(miNombre,mesa,tv,miAcumPct){
+  if(!mesa){document.getElementById('ranking-mesa-card').style.display='none';return;}
+  var proms=Object.entries(appData.promotores).filter(function(e){
+    return e[1].rol!=='SUPERVISOR'&&e[1].mesa===mesa;
+  });
+  if(proms.length<2){document.getElementById('ranking-mesa-card').style.display='none';return;}
+  // Calcular cobertura acumulada de cada uno y ordenar
+  proms=proms.map(function(e){
+    var d=e[1],tot=d.totalTareasEnviadas||0;
+    var val=(d.historial||0)+(tv?d.validadas.length:0);
+    var pct=tot>0?Math.round(val/tot*100):0;
+    return {nombre:e[0],pct:pct,obj:d.objetivo};
+  }).sort(function(a,b){return b.pct-a.pct;});
+  document.getElementById('ranking-mesa-card').style.display='block';
+  var el=document.getElementById('ranking-mesa-list');el.innerHTML='';
+  proms.forEach(function(p,i){
+    var esSelf=p.nombre===miNombre;
+    var rc=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
+    var avStr=p.obj?Math.round(p.pct/p.obj*100)+'% avance':'';
+    el.innerHTML+='<div class="ranking-card" style="'+(esSelf?'background:var(--blue-light);border-color:var(--blue-mid);':'')+'cursor:default;">'
+      +'<div class="rank-num '+rc+'">'+(i+1)+'</div>'
+      +'<div class="rank-info"><div class="rank-name">'+(esSelf?'<strong>'+p.nombre+'</strong>':p.nombre)+'</div>'
+      +'<div class="rank-detail">'+p.pct+'% cobertura acum.'+(avStr?' · '+avStr:'')+'</div></div>'
+      +'<span class="pct-pill '+pctColor(p.pct)+'">'+p.pct+'%</span>'
+      +'</div>';
+  });
 }
 
 function togglePendientes(){
@@ -1026,14 +1183,20 @@ function renderSupMesas(){
   Object.keys(mesas).sort().forEach(function(mesa){
     var mp=mesas[mesa],mEnv=mp.reduce(function(s,e){return s+e[1].enviadas;},0),mVal=mp.reduce(function(s,e){return s+e[1].validadas.length;},0),mPct=mEnv>0?Math.round(mVal/mEnv*100):0,color=mesaColor(mPct);
     var ph=mp.sort(function(a,b){var pa=a[1].enviadas>0?a[1].validadas.length/a[1].enviadas:0,pb=b[1].enviadas>0?b[1].validadas.length/b[1].enviadas:0;return pb-pa;}).map(function(e){
-      var n=e[0],d=e[1],pp=d.enviadas>0?Math.round(d.validadas.length/d.enviadas*100):0;
-      var acumI=d.historial+(tv?d.validadas.length:0);
+      var n=e[0],d=e[1];
+      var pp=d.enviadas>0?Math.round(d.validadas.length/d.enviadas*100):0;
+      var acumI=(d.historial||0)+(tv?d.validadas.length:0);
       var totalMesI=d.totalTareasEnviadas||0;
       var acumPctI=totalMesI>0?Math.round(acumI/totalMesI*100):null;
-      var objPct=d.objetivo&&acumPctI!==null?Math.round(acumPctI/d.objetivo*100):null;
+      var avanceI=d.objetivo&&acumPctI!==null?Math.round(acumPctI/d.objetivo*100):null;
+      var objPct2=avanceI; // avance % vs objetivo
       var al=tv&&d.enviadas>0&&d.validadas.length===0?'<i class="ti ti-alert-circle" style="color:var(--red);font-size:14px;"></i>':'';
       var clickAttr=isAdmin?'onclick="showDashboard(\''+n.replace(/'/g,"\\'")+"',true)\"":'';
-      return '<div class="mesa-prom-row" '+clickAttr+'><div class="mesa-prom-avatar">'+initials(n)+'</div><div class="mesa-prom-name">'+n+'</div>'+al+'<span class="mesa-prom-pill '+(tv?pctColor(pp):'pill-gray')+'">'+(tv?pp+'%':d.enviadas+' t')+'</span>'+(objPct!==null?'<span style="font-size:10px;color:var(--text2);margin-left:3px;">IP:'+objPct+'%</span>':'')+'</div>';
+      return '<div class="mesa-prom-row" '+clickAttr+'><div class="mesa-prom-avatar">'+initials(n)+'</div><div class="mesa-prom-name">'+n+'</div>'+al
+        +'<span class="mesa-prom-pill '+(tv?pctColor(pp):'pill-gray')+'">'+(tv?pp+'% hoy':d.enviadas+' t')+'</span>'
+        +(acumPctI!==null?'<span style="font-size:10px;color:var(--text2);margin-left:3px;">Mes:'+acumPctI+'%</span>':'')
+        +(avanceI!==null?'<span style="font-size:10px;color:'+(avanceI>=100?'var(--green)':avanceI>=70?'var(--amber)':'var(--red)')+';margin-left:2px;">Av:'+avanceI+'%</span>':'')
+        +'</div>';
     }).join('');
     html+='<div class="mesa-card"><div class="mesa-header"><div class="mesa-name">'+mesa+'</div>'+(tv?'<div class="mesa-pct" style="color:'+color+';">'+mPct+'%</div>':'<div class="mesa-pct" style="color:var(--gray);">'+mp.length+' prom.</div>')+'</div>'+(tv?'<div class="mesa-prog-track"><div class="mesa-prog-fill" style="width:'+mPct+'%;background:'+color+';"></div></div>':'')+'<div>'+ph+'</div></div>';
   });
@@ -1042,27 +1205,27 @@ function renderSupMesas(){
 
 function renderSupRanking(){
   var el=document.getElementById('sup-panel-ranking'),tv=appData.tieneVenta;
-  var proms=getSupProms().sort(function(a,b){
-    if(tv){var pa=a[1].enviadas>0?a[1].validadas.length/a[1].enviadas:0,pb=b[1].enviadas>0?b[1].validadas.length/b[1].enviadas:0;return pb-pa;}
-    return (b[1].historial||0)-(a[1].historial||0);
-  });
-  var html=tv?'':'<div class="no-obj-note">Sin venta cargada — ranking por validaciones históricas</div>';
-  proms.forEach(function(e,i){
-    var n=e[0],d=e[1],rank=i+1,rc=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
-    var pct=tv&&d.enviadas>0?Math.round(d.validadas.length/d.enviadas*100):null;
-    var al=tv&&d.enviadas>0&&d.validadas.length===0;
-    var acum=d.historial+(tv?d.validadas.length:0);
-    var totalMesP=d.totalTareasEnviadas||0;
-    var acumPctP=totalMesP>0?Math.round(acum/totalMesP*100):null;
-    var ipStr=d.objetivo&&acumPctP!==null?' · IP: '+Math.round(acumPctP/d.objetivo*100)+'%':'';
-    var rh='';
-    if(d.objetivo&&acumPctP!==null){
-      var ritmo=Math.round(acumPctP/Math.max(calcDia(appData.hoy),1)*10)/10;
-      var nec=Math.round(d.objetivo/31*10)/10;
-      rh=' · '+ritmo+'%/'+nec+'% <span style="color:'+(ritmo>=nec?'var(--green)':'var(--red)')+';">'+(ritmo>=nec?'✓':'✗')+'</span>';
-    }
-    var clickAttr=isAdmin?'onclick="showDashboard(\''+n.replace(/'/g,"\\'")+"',true)\"":'';
-    html+='<div class="ranking-card" '+clickAttr+'><div class="rank-num '+rc+'">'+rank+'</div><div class="rank-info"><div class="rank-name">'+n+'</div><div class="rank-detail">'+(tv?d.validadas.length+' val / '+d.enviadas+' env'+(pct!==null?' ('+pct+'%)':''):d.historial+' hist.')+ipStr+rh+'</div></div>'+(al?'<div class="rank-alert"><i class="ti ti-alert-triangle"></i></div>':'')+'</div>';
+  var proms=getSupProms().map(function(e){
+    var d=e[1],tot=d.totalTareasEnviadas||0;
+    var val=(d.historial||0)+(tv?d.validadas.length:0);
+    var pct=tot>0?Math.round(val/tot*100):0;
+    return {nombre:e[0],data:d,acumPct:pct,val:val,tot:tot};
+  }).sort(function(a,b){return b.acumPct-a.acumPct;});
+  var html='';
+  proms.forEach(function(p,i){
+    var rank=i+1,rc=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
+    var avance=p.data.objetivo?Math.round(p.acumPct/p.data.objetivo*100):null;
+    var al=tv&&p.data.enviadas>0&&p.data.validadas.length===0;
+    var clickAttr=isAdmin?'onclick="showDashboard(\''+p.nombre.replace(/'/g,"\\'")+"',true)\"":'';
+    html+='<div class="ranking-card" '+clickAttr+'>'
+      +'<div class="rank-num '+rc+'">'+rank+'</div>'
+      +'<div class="rank-info">'
+      +'<div class="rank-name">'+p.nombre+'</div>'
+      +'<div class="rank-detail">'+p.acumPct+'% cob. acum. · '+p.val+'/'+p.tot+' tareas'
+      +(p.data.objetivo?' · Obj: '+p.data.objetivo+'%':'')
+      +(avance!==null?' · Avance: '+avance+'%':'')+'</div></div>'
+      +(al?'<div class="rank-alert"><i class="ti ti-alert-triangle"></i></div>':'<span class="pct-pill '+pctColor(p.acumPct)+'">'+p.acumPct+'%</span>')
+      +'</div>';
   });
   el.innerHTML=html||'<div class="empty-state">Sin datos</div>';
 }
