@@ -751,7 +751,6 @@ function onFile(input,key){
   document.getElementById('n-'+key).textContent=f.name;
   if(key==='obj'){
     document.getElementById('lbl-obj').innerHTML='Objetivos + DNI del mes <span class="new-tag">NUEVO</span>';
-    // Guardar en localStorage
     var reader=new FileReader();
     reader.onload=function(e){
       try{
@@ -822,11 +821,16 @@ async function _procesarInterno(btn){
   setStatus('Día detectado: '+fmtFecha(hoy)+' · procesando historial...');
   await yieldToUI();
 
+  // =====================================================================
+  // FIX: skuMap usa TASK_BDR_TEXT (nombre de tarea) y SKU_ID (código)
+  // columnas reales del Sheet de SKUs de validación
+  // =====================================================================
   var skuMap={};
   rawS.forEach(function(r){
-    var k=String(r.full_description||'').toUpperCase();
+    var k=String(r.TASK_BDR_TEXT||'').toUpperCase();
+    if(!k)return;
     if(!skuMap[k])skuMap[k]=[];
-    skuMap[k].push(normSku(r.sku_id));
+    skuMap[k].push(normSku(String(r.SKU_ID||'')));
   });
   await yieldToUI();
 
